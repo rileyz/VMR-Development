@@ -1,47 +1,14 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
+# Ignore everything
+*
 
-# Folder config file
-Desktop.ini
+# Include these files types
+!*.ps1
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# Even if they are in subdirectories
+!*/
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+# Exclude the following files
+^WIP*.ps1
 
-# Windows shortcuts
-*.lnk
-
-# =========================
-# Operating System Files
-# =========================
-
-# OSX
-# =========================
-
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
+# Exclude the following folders
+^WIP
