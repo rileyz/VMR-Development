@@ -4,7 +4,7 @@
 # Windows 8.1,Yes,Yes
 # Windows 8,Yes,Yes
 # Windows 7,Unproven,Unproven
-# Server 2016,NA,Unproven
+# Server 2016,NA,Yes
 # Server 2012 R2,NA,Unproven
 # Server 2012,NA,Unproven
 # Server 2008 R2,NA,Unproven

@@ -30,8 +30,7 @@ Author:.......http://www.linkedin.com/in/rileylim
 
 # Setting up housekeeping for variables ###########################################################
 Clear-Host
-Write-Output '** Start Virtual Machine Runner Build **'
-Write-Output "Virtual Machine Runner script started at $(Get-Date)" `r
+Write-Output '** Start Virtual Machine Runner Build **' `r
 Write-Output 'Starting housekeeping actions, preparing variables.'
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
@@ -47,8 +46,8 @@ $VM_PowerShell = 'C:\Windows\System32\WindowsPowershell\v1.0\PowerShell.exe'
 $VMs = (Get-FileName -initialDirectory "C:\Users\$env:username\Documents\Virtual Machines\")
 
 #User modifiable debugging variables.
-$VerbosePreference        = 'Continue' #SilentlyContinue|Continue
-$DebugPreference          = 'Continue' #SilentlyContinue|Continue
+$VerbosePreference        = 'SilentlyContinue' #SilentlyContinue|Continue
+$DebugPreference          = 'SilentlyContinue' #SilentlyContinue|Continue
 $BuildErrorPreference     = 'RetryThenSkip'    #Pause|RetryThenSkip|RetryThenStop|Stop
 $BuildErrorRetryAttempts  = '7'                #0 for unlimited attempts
 $ForceRunUnprovenScripts  = $false
@@ -61,6 +60,8 @@ $VM_EmptyDVDDrive         = $true              #Ejects media from virtual machin
 $VM_OptimiseIOPerformance = $true
 
 $PostBootWaitInterval = 30
+
+$OfficeVersion      = 'Office2016_32'          #DoNotInstall|Office2013_32|Office2013_64|Office2016_32|Office2016_64
 
 $Repackager         = $true
 
@@ -91,6 +92,9 @@ $AppVClient51HF1    = $true
 $AppVClient51HF2    = $true
 $AppVClient51HF4    = $true
 
+$AppVInBoxClient    = $true                    #App-V Client is now part of the operating system.
+$AppVADKSequencer   = $true                    #Sequencer via the Windows Assessment and Deployment Kit.
+
 Write-Verbose 'Variables prepared.'
 #<<< End of Setting up housekeeping for variables >>>
 
@@ -101,5 +105,4 @@ Write-Verbose 'Variables prepared.'
 
 Write-Output ''
 Write-Output '** THE END **'
-Write-Output "Virtual Machine Runner script ended at $(Get-Date)"
 #<<< End of build work >>>

@@ -6,4 +6,8 @@ VMR_RunModule -Module Framework\Module_DesktopExperience-SetWallPaper.ps1 -Argum
 #Configure Windows Services.
 Write-Output 'Configure Windows Services: SequencerConfiguration_WindowsServer2016.csv'
 VMR_RunModule -Module Framework\Module_Windows-Services-GlobalConfigure.ps1 -Arguments '-WindowsServicesCSV SequencerConfiguration_WindowsServer2016.csv'
+
+#Disable Windows Defender.
+Write-Output 'Disable Windows Defender.'
+VMR_RunModule -Module Framework\Module_Windows-WindowsDefender-GlobalDisable.ps1
 #<<< End of Shared Sequencer Configuration Windows Server 2008 R2 Build >>>

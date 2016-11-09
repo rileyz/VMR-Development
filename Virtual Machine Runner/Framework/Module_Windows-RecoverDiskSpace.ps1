@@ -4,7 +4,7 @@
 # Windows 8.1,Yes,Yes
 # Windows 8,Yes,Yes
 # Windows 7,Yes,Yes
-# Server 2016,NA,Unproven
+# Server 2016,NA,Yes
 # Server 2012 R2,NA,Yes
 # Server 2012,NA,Yes
 # Server 2008 R2,NA,Yes
@@ -61,6 +61,7 @@ If ($OperatingSystem -notlike '*Server*')
 
 Write-Host 'Clearing user and system temp folders'
 Remove-Item C:\Users\$env:username\AppData\Local\Temp\* -Recurse
+Remove-Item C:\Logs -Recurse -Force
 Remove-Item C:\PerfLogs -Recurse -Force
 Remove-Item C:\Windows\Prefetch\* -Recurse
 Remove-Item C:\Windows\Temp\* -Recurse

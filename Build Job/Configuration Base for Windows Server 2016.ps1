@@ -2,8 +2,8 @@
 Write-Output 'Adjusting Power Plan to High Preformace.'
 VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPreformace-GlobalEnable.ps1
 
-#Write-Output 'Installing Windows Server 2016 updates via WSUSOffline.'
-#VMR_RunModule -RerunUntilComplete -WaitForWindowsUpdateWorkerProcess -Module Framework\Module_Windows-WindowsUpdate-WSUSOffline.ps1
+Write-Output 'Installing Windows Server 2016 updates via WSUSOffline.'
+VMR_RunModule -RerunUntilComplete -WaitForWindowsUpdateWorkerProcess -Module Framework\Module_Windows-WindowsUpdate-WSUSOffline.ps1
 
 Write-Output 'Configure Windows Task Schedules: BaseConfiguration_WindowsServer2016.csv.'
 VMR_RunModule -Module Framework\Module_Windows-TaskScheduler-GlobalConfigure.ps1 -Arguments '-TaskSchedulesCSV BaseConfiguration_WindowsServer2012.csv'
@@ -20,7 +20,7 @@ VMR_RunModule -Module Framework\Module_Windows-ComputerAccountPasswordChange-Glo
 Write-Output 'Enable Remote Desktop Connection.'
 VMR_RunModule -Module Framework\Module_DesktopExperience-EnableRemoteDesktopConnection.ps1
 
-Write-Output 'Disable Windows Server 2012 Lock Screen.'
+Write-Output 'Disable Windows Server 2016 Lock Screen.'
 VMR_RunModule -Module Framework\Module_Windows-LockScreen-GlobalDisable.ps1
 
 Write-Output 'Creating Test User Accounts.'
@@ -28,6 +28,9 @@ VMR_RunModule -Module Framework\Module_Windows-UserAccounts-Add.ps1
 
 Write-Output 'Enabling auto logon.'
 VMR_RunModule -Module Framework\Module_Windows-UserAccounts-AutoLogon.ps1 -Arguments '-AutoLogonUserName Cached'
+
+Write-Output 'Waiting 5 minutes to allow profile first time tasks to complete.'
+Start-Sleep -Seconds 300
 
 Write-Output 'Enabling auto logon.'
 VMR_RunModule -Module Framework\Module_Windows-UserAccounts-AutoLogon.ps1 -Arguments "-AutoLogonUserName $GuestUserName -AutoLogonPassword $GuestPassword"
@@ -59,8 +62,8 @@ VMR_RunModule -Module Custom\Module_Custom-PackagingTools.ps1
 Write-Output 'Creating Binaries folder and shortcut.'
 VMR_RunModule -Module Custom\Module_Custom-CreateMyBinariesFolder.ps1
 
-Write-Output 'Installing Office Professional Plus 2013.'
-VMR_RunModule -Module Framework\Module_Software-OfficeProfessionalPlus2013.ps1 -Arguments '-Offce32bit'
+Write-Output 'Installing Office Professional Plus.'
+VMR_RunModule -Module Framework\Module_Software-OfficeProfessionalPlus.ps1 -Arguments "-Version $OfficeVersion"
 
 Write-Output 'Installing Windows 2016 and Office updates via WSUSOffline.'
 VMR_RunModule -RerunUntilComplete -Module Framework\Module_Windows-WindowsUpdate-WSUSOffline.ps1

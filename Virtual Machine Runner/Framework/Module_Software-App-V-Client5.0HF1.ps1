@@ -14,7 +14,7 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Windows 8.1,Yes,Yes
 # Windows 8,Yes,Yes
 # Windows 7,Yes,Yes
-# Server 2016,NA,Yes
+# Server 2016,NA,No
 # Server 2012 R2,NA,Yes
 # Server 2012,NA,Yes
 # Server 2008 R2,NA,Yes

@@ -41,6 +41,9 @@ VMR_RunModule -Module Framework\Module_Windows-UserAccounts-Add.ps1
 Write-Output 'Enabling auto logon.'
 VMR_RunModule -Module Framework\Module_Windows-UserAccounts-AutoLogon.ps1 -Arguments '-AutoLogonUserName Cached'
 
+Write-Output 'Waiting 5 minutes to allow profile first time tasks to complete.'
+Start-Sleep -Seconds 300
+
 Write-Output 'Enabling auto logon.'
 VMR_RunModule -Module Framework\Module_Windows-UserAccounts-AutoLogon.ps1 -Arguments "-AutoLogonUserName $GuestUserName -AutoLogonPassword $GuestPassword"
 
@@ -68,8 +71,8 @@ VMR_RunModule -Module Custom\Module_Custom-PackagingTools.ps1
 Write-Output 'Creating Binaries folder and shortcut.'
 VMR_RunModule -Module Custom\Module_Custom-CreateMyBinariesFolder.ps1
 
-Write-Output 'Installing Office Professional Plus 2013.'
-VMR_RunModule -Module Framework\Module_Software-OfficeProfessionalPlus2013.ps1 -Arguments '-Offce32bit'
+Write-Output 'Installing Office Professional Plus.'
+VMR_RunModule -Module Framework\Module_Software-OfficeProfessionalPlus.ps1 -Arguments "-Version $OfficeVersion"
 
 Write-Output 'Installing Windows 10 and Office updates via WSUSOffline.'
 VMR_RunModule -RerunUntilComplete -Module Framework\Module_Windows-WindowsUpdate-WSUSOffline.ps1
