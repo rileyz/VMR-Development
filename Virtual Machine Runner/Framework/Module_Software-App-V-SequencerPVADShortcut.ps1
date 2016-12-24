@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-    Enable the built-in App-V client.
+    Create a shortcut for Sequencer enabled PVAD.
  
 .LINK
 Author:.......http://www.linkedin.com/in/rileylim
@@ -11,13 +11,13 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Script Support ##################################################################################
 # Operating System, 32-bit Support, 64-bit Support
 # Windows 10,Yes,Yes
-# Windows 8.1,No,No
-# Windows 8,No,No
-# Windows 7,No,No
-# Server 2016,NA,Unproven
-# Server 2012 R2,NA,No
-# Server 2012,NA,No
-# Server 2008 R2,NA,No
+# Windows 8.1,Yes,Yes
+# Windows 8,Yes,Yes
+# Windows 7,Yes,Yes
+# Server 2016,NA,Yes
+# Server 2012 R2,NA,Yes
+# Server 2012,NA,Yes
+# Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
 # Script Assets ###################################################################################
@@ -39,16 +39,31 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
-$ArrayScriptExitResult = @()
+If (Test-Path 'C:\Program Files\Microsoft Application Virtualization\Sequencer\Sequencer.exe')
+        {$Directory = 'C:\Program Files\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
+         $Shortcut = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Application Virtualization Sequencer\Squencer with PVAD Enabled.lnk'
 
-Enable-Appv
+         $WshShell = New-Object -comObject WScript.Shell
+         $Shortcut = $WshShell.CreateShortcut("$Shortcut")
+         $Shortcut.Arguments = '-EnablePVADControl'
+         $Shortcut.IconLocation = '%SystemRoot%\Installer\{EDC5FCA0-0D53-4F9C-9EBC-0A1919C96B18}\Sequencer.exe'
+         $Shortcut.TargetPath = "$Directory"
+         $Shortcut.Save()
+         
+         If (Test-Path $Shortcut){$ArrayScriptExitResult += 0}}
 
-$ArrayScriptExitResult += $?
+If (Test-Path 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe')
+        {$Directory = 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
+         $Shortcut = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Windows Kits\Windows ADK\Squencer with PVAD Enabled.lnk'
 
-$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, inculding reboots here.
-$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
-$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
-$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this varible
+         $WshShell = New-Object -comObject WScript.Shell
+         $Shortcut = $WshShell.CreateShortcut("$Shortcut")
+         $Shortcut.Arguments = '-EnablePVADControl'
+         $Shortcut.IconLocation = 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
+         $Shortcut.TargetPath = "$Directory"
+         $Shortcut.Save()
+         
+         If (Test-Path $Shortcut){$ArrayScriptExitResult += 0}}
 
 If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
         {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
@@ -56,7 +71,6 @@ If ($ScriptError -eq $null)                       #If ScriptError is empty, then
             Else{$ScriptExitResult = '0'}}
     Else{$ScriptExitResult = 'Error'
          $ScriptError >> $VMRScriptLog}
-#End of Use $ArrayScriptExitResult to capture multiple results and check, otherwise delete.
 
 $ScriptExitResult >> $VMRScriptLog
 

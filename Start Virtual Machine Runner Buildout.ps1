@@ -43,23 +43,25 @@ $VMRScriptFile = VMR_ScriptInformation -ScriptName
 $Source = "$VMRScriptLocation\Virtual Machine Runner"
 $VM_VMRTarget = 'C:\VirtualMachineRunner'
 $VM_PowerShell = 'C:\Windows\System32\WindowsPowershell\v1.0\PowerShell.exe'
-$VMs = (Get-FileName -initialDirectory "C:\Users\$env:username\Documents\Virtual Machines\")
+$VMs = (Get-FileName "C:\Users\$env:username\Documents\Virtual Machines\")
+$GuestUserName  = 'Administrator'
+$GuestPassword  = Get-Password
 
 #User modifiable debugging variables.
 $VerbosePreference        = 'SilentlyContinue' #SilentlyContinue|Continue
 $DebugPreference          = 'SilentlyContinue' #SilentlyContinue|Continue
 $BuildErrorPreference     = 'RetryThenSkip'    #Pause|RetryThenSkip|RetryThenStop|Stop
 $BuildErrorRetryAttempts  = '7'                #0 for unlimited attempts
+$PostBootWaitInterval     = '30'
 $ForceRunUnprovenScripts  = $false
 
 #User modifiable Virtual Machine Runner variables.
-$GuestUserName            = 'Administrator'
-$GuestPassword            = 'PasswordChangeHere'
 $VM_DisableScreenScaling  = $true              #Disables VMware Display Scaling to virtual machine.
 $VM_EmptyDVDDrive         = $true              #Ejects media from virtual machine DVD drive.
 $VM_OptimiseIOPerformance = $true
 
-$PostBootWaitInterval = 30
+$MimicHomeDrives    = 'H:Home'                 #None|H:Home
+$MimicCommonDrives  = 'I:IT Dept,S:Shared'     #None|F:Finance Dept|I:IT Dept,S:Shared
 
 $OfficeVersion      = 'Office2016_32'          #DoNotInstall|Office2013_32|Office2013_64|Office2016_32|Office2016_64
 

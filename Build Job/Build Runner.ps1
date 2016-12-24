@@ -4,7 +4,7 @@ Write-Output 'Starting housekeeping actions, preparing virtual machine.'
 #Setup VIX PS drive.
 Write-Output 'Setting up VIX PS drive.'
 If ((Test-Path VIX:\) -eq $false)
-        {$null = New-PSDrive -name VIX -psprovider FileSystem -root 'C:\Program Files (x86)\VMware\VMware VIX'
+        {$null = New-PSDrive -Name VIX -PSProvider FileSystem -Root 'C:\Program Files (x86)\VMware\VMware VIX'
          Set-Location VIX:
          Write-Verbose 'VIX PS drive is ready.'}
     Else{Write-Verbose 'No actions needed, VIX PS drive already mounted.'}
@@ -56,7 +56,7 @@ Foreach ($VM in $VMs)
 
 
     # Start of Build Runner Logic #####################################################################
-    If ($VM_Version -lt '*10.0.14393*')
+    If ([Version]$VM_Version -lt '10.0.14393')
            {# Start of App-V as a Installation Logic ##########################################################
             Write-Output 'Shifting to App-V as a installation branch.'
             If ($Repackager -or $AppVSeq5 -or $AppVClient5 -or $AppVClient5HF1 -or $AppVSeq5SP1 -or $AppVClient5SP1 -or $AppVClient5SP1HF3 -or $AppVSeq5SP2 -or $AppVClient5SP2 -or $AppVClient5SP2HF2 -or $AppVSeq5SP2HF4 -or $AppVClient5SP2HF4 -or $AppVClient5SP2HF5 -eq $true)
@@ -428,54 +428,18 @@ Foreach ($VM in $VMs)
                      VMWarePowerControl -SoftStop
                      VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF4'}
 
-            Invoke-Item $VM
+            Invoke-Item $VM}
 
-            $StopWatch.Stop()
-            Write-Output "Completed build on `"$((Get-ChildItem -Path $VM).Name)`" at $(Get-Date)."
-            Write-Output "Build time was $($sw.Elapsed.Hours) hours and $($sw.Elapsed.Minutes) minutes."}
-            #<<< End of App-V as a Feature Logic >>>
+            #<<< End of App-V as a Installation Logic >>>
 
        Else{# Start of App-V as a Feature Logic ###############################################################
-            Write-Output 'Shifting to App-V as a feature branch.'
+            Write-Output 'Shifting to App-V as a feature branch, Windows version $VM_Version detected.'
+	    
             If ($AppVSeq5 -or $AppVClient5 -or $AppVClient5HF1 -or $AppVSeq5SP1 -or $AppVClient5SP1 -or $AppVClient5SP1HF3 -or $AppVSeq5SP2 -or $AppVClient5SP2 -or $AppVClient5SP2HF2 -or $AppVSeq5SP2HF4 -or $AppVClient5SP2HF4 -or 
                 $AppVClient5SP2HF5 -or $AppVSeq5SP3 -or $AppVClient5SP3 -or $AppVClient5SP3HF2 -or $AppVClient5SP3HF3 -or $AppVSeq51 -or $AppVClient51 -or $AppVClient51HF1 -or $AppVClient51HF2 -or $AppVClient51HF4 -eq $true)
                     {Write-Warning 'The App-V Sequencer and Client are now features of Windows 10 and Windows Server 2016.'
                      Write-Warning 'App-V Sequencers and Clients below version 5.1 Hotfix 4 will not be built.'}
 
-            #The below will be remove once the above has been tested.
-            If ($AppVSeq5)          {Write-Warning 'Can not install App-V Sequencer 5.0 on this operating system.'}
-            If ($AppVClient5)       {Write-Warning 'Can not install App-V Client 5.0 on this operating system.'}
-            If ($AppVClient5HF1)    {Write-Warning 'Can not install App-V Client 5.0 HF1 on this operating system.'}
-             
-            If ($AppVSeq5SP1)       {Write-Warning 'Can not install App-V Sequencer 5.0 SP1 on this operating system.'}             
-            If ($AppVClient5SP1)    {Write-Warning 'Can not install App-V Client 5.0 SP1 on this operating system.'}
-            If ($AppVClient5SP1HF3) {Write-Warning 'Can not install App-V Client 5.0 SP1 HF3 on this operating system.'}
-            
-            If ($AppVSeq5SP2)       {Write-Warning 'Can not install App-V Sequencer 5.0 SP2 on this operating system.'}             
-            If ($AppVClient5SP2)    {Write-Warning 'Can not install App-V Client 5.0 SP2 on this operating system.'}
-            If ($AppVClient5SP2HF2) {Write-Warning 'Can not install App-V Client 5.0 SP2 HF2 on this operating system.'}
-             
-            If ($AppVSeq5SP2HF4)    {Write-Warning 'Can not install App-V Sequencer 5.0 SP2 HF4 on this operating system.'}             
-            If ($AppVClient5SP2HF4) {Write-Warning 'Can not install App-V Client 5.0 SP2 HF4 on this operating system.'}
-            If ($AppVClient5SP2HF5) {Write-Warning 'Can not install App-V Client 5.0 SP2 HF5 on this operating system.'}
-             
-            If ($AppVSeq5SP3)       {Write-Warning 'Can not install App-V Sequencer 5.0 SP3 on this operating system.'}             
-            If ($AppVClient5SP3)    {Write-Warning 'Can not install App-V Client 5.0 SP3 on this operating system.'}
-            If ($AppVClient5SP3HF2) {Write-Warning 'Can not install App-V Client 5.0 SP3 HF2 on this operating system.'}
-            If ($AppVClient5SP3HF3) {Write-Warning 'Can not install App-V Client 5.0 SP3 HF3 on this operating system.'}
-             
-            If ($AppVSeq51)         {Write-Warning 'Can not install App-V Sequencer 5.1 on this operating system.'}             
-            If ($AppVClient51)      {Write-Warning 'Can not install App-V Client 5.1 on this operating system.'}
-            If ($AppVClient51HF1)   {Write-Warning 'Can not install App-V Client 5.1 HF1 on this operating system.'}
-            If ($AppVClient51HF2)   {Write-Warning 'Can not install App-V Client 5.1 HF2 on this operating system.'}
-            If ($AppVClient51HF4)   {Write-Warning 'Can not install App-V Client 5.1 HF4 on this operating system.'}
-
-            Write-Warning "Windows version $VM_Version detected, VMR is in alpha for this build branch."
-            
-            
-            
-            
-            #Create base.
             VMWarePowerControl -Start
             VMR_CreateJunctionPoint
 
@@ -491,7 +455,6 @@ Foreach ($VM in $VMs)
             VMWarePowerControl -SoftStop
             VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Base'
             
-            #
             If ($Repackager -eq $true)
                     {VMWarePowerControl -Start
                      VMR_CreateJunctionPoint
@@ -508,7 +471,7 @@ Foreach ($VM in $VMs)
                      VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Repackager'}
             
             
-            If ($XXXX -eq $true)
+            If ($AppVADKSequencer -eq $true)
                     {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'Base'
                      VMWarePowerControl -Start
                      VMR_CreateJunctionPoint
@@ -518,26 +481,27 @@ Foreach ($VM in $VMs)
                           '*Server 2016*'      {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows Server 2016.ps1" ; Break}
                           Default              {Write-Warning 'Unknown Operating System'}}
 
-                     . "$VMRScriptLocation\Build Job\App-V Sequencer 5.0.ps1"
+                     . "$VMRScriptLocation\Build Job\App-V Sequencer Feature.ps1"
                      . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
                      VMR_RemoveJunctionPoint
                      VMWarePowerControl -SoftStop
-                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Sequencer 5.0'}
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'App-V Sequencer'}
 
 
-            If ($xxxxx -eq $true)
-                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5.0 Base'
+            If ($AppVInBoxClient -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'Base'
                      VMWarePowerControl -Start
                      VMR_CreateJunctionPoint
-                     . "$VMRScriptLocation\Build Job\App-V Client 5.0.ps1"
+                     . "$VMRScriptLocation\Build Job\App-V Client Feature.ps1"
                      . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
                      VMR_RemoveJunctionPoint
                      VMWarePowerControl -SoftStop
-                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.0'}
-
-
-            } 
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'App-V Client'}} 
             #<<< End of App-V as a Feature Logic >>>
+
+    $StopWatch.Stop()
+    Write-Output "Completed build on `"$((Get-ChildItem -Path $VM).Name)`" at $(Get-Date)."
+    Write-Output "Build time was $($StopWatch.Elapsed.Hours) hours and $($StopWatch.Elapsed.Minutes) minutes."
 
     #<<< End of Build Runner Logic >>>
 }

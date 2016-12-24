@@ -8,6 +8,6 @@ VMR_RunModule -Module Framework\Module_Software-AppDeployRepackager.ps1
 Write-Output 'Installing InstEd.'
 VMR_RunModule -Module Framework\Module_Software-InstEd.ps1
 
-Write-Output 'Installing Installshield Repackager 11.5.'
-VMR_RunModule -Module Custom\Module_Custom-InstallshieldRepackager11.5.ps1
+Write-Output 'Installing Installshield Repackager.'
+VMR_RunModule -Module Framework\Module_Software-InstallshieldRepackager.ps1
 #<<< End of Windows Installer Repackager Build >>>

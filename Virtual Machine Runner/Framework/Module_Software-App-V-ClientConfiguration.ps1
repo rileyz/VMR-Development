@@ -42,9 +42,14 @@ Set-AppvClientConfiguration -EnablePackageScripts 1
 $ArrayScriptExitResult += $?
 
 #Valid for 5.0 SP2 and above.
-$AppVClientExe = (Get-Item "C:\Program Files\Microsoft Application Virtualization\Client\AppVClient.exe").VersionInfo.FileVersion
-$MinimumVersion = '5.0.3361.0'
-If (([version]$AppVClientExe).CompareTo([version]$MinimumVersion) -ge '0')
+If (Test-Path 'C:\Program Files\Microsoft Application Virtualization\Client\AppVClient.exe')
+        {$AppVClientExe = (Get-Item 'C:\Program Files\Microsoft Application Virtualization\Client\AppVClient.exe').VersionInfo.FileVersion
+         $MinimumVersion = '5.0.3361.0'
+         If (([version]$AppVClientExe).CompareTo([version]$MinimumVersion) -ge '0')
+                 {Set-AppvClientConfiguration -EnablePublishingRefreshUI 1
+                  $ArrayScriptExitResult += $?}}
+
+If (Test-Path 'C:\Windows\System32\AppVClient.exe')
         {Set-AppvClientConfiguration -EnablePublishingRefreshUI 1
          $ArrayScriptExitResult += $?}
 

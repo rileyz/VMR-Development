@@ -44,6 +44,9 @@ VMR_RunModule -Module Framework\Module_Windows-UserAccounts-Remove.ps1
 Write-Output 'Creating Test User Accounts.'
 VMR_RunModule -Module Framework\Module_Windows-UserAccounts-Add.ps1
 
+Write-Output 'Configure to connect simulated mapped network drives on logon.'
+VMR_RunModule -Module Framework\Module_Windows-UserAccounts-NetworkDrives.ps1 -Arguments "-HomeDrives `'$MimicHomeDrives`' -CommonDrives `'$MimicCommonDrives`'"
+
 Write-Output 'Enabling auto logon.'
 VMR_RunModule -Module Framework\Module_Windows-UserAccounts-AutoLogon.ps1 -Arguments '-AutoLogonUserName Cached'
 

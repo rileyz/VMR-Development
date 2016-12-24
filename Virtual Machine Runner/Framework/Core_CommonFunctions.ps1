@@ -60,6 +60,44 @@ Function Get-FileName($InitialDirectory) {
 
  } #End Function Get-FileName
 
+Function Get-Password{
+[xml]$XAML_PasswordDialog = @"
+<Window Name="Form_PasswordDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Virtual Machine Credentials" WindowStartupLocation="CenterScreen" Height="176" Width="328" ResizeMode="NoResize" ShowInTaskbar="False" FocusManager.FocusedElement="{Binding ElementName=Txt_PasswordDialog_Input}">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" MappingMode="RelativeToBoundingBox" StartPoint="0.5,0">
+                <GradientStop Color="#FFB4B4B4" Offset="1"/>
+                <GradientStop Color="White" Offset="0.603"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <TextBlock TextWrapping="Wrap" Text="Please enter Administrator account password." Margin="40,15,0,0"/>
+        <Label Content="Password:" HorizontalAlignment="Left" Height="27" VerticalAlignment="Top" Width="76" Margin="15,49,0,0"/>
+        <Button Name="Btn_PasswordDialog_OK" Content="OK" Height="20" Margin="194,88,26,20" IsDefault="True"/>
+        <TextBox Name="Txt_PasswordDialog_Input" HorizontalAlignment="Left" Height="23" Margin="91,51,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="208"/>
+    </Grid>
+</Window>
+"@
+
+    $XML_Node_Reader_PasswordDialog = (New-Object System.Xml.XmlNodeReader $XAML_PasswordDialog)
+    $PasswordDialog = [Windows.Markup.XamlReader]::Load($XML_Node_Reader_PasswordDialog)
+    $Btn_PasswordDialog_OK = $PasswordDialog.FindName('Btn_PasswordDialog_OK')
+    $Txt_PasswordDialog_Input = $PasswordDialog.FindName('Txt_PasswordDialog_Input')
+
+    $Btn_PasswordDialog_OK.Add_Click({$PasswordDialog.Hide()})
+
+    $PasswordDialog.Topmost = $true
+    $null = $PasswordDialog.ShowDialog()
+    
+    $Txt_PasswordDialog_Input.Text.ToString()
+
+    #http://stackoverflow.com/questions/21804052/powershell-xaml-get-textbox-text-into-variable
+    #http://stackoverflow.com/questions/20050426/wpf-always-on-top
+
+ } #End Function Get-Password
+
 Function VMR_CreateJunctionPoint{
     Write-Output 'Setting up Virtual Machine Runner folder.'
     $FileCheck = "$VM_VMRTarget\Framework\Core_CommonFunctions.ps1"

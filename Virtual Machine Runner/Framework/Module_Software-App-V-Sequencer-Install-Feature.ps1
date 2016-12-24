@@ -10,14 +10,14 @@ Author:.......http://www.linkedin.com/in/rileylim
 
 # Script Support ##################################################################################
 # Operating System, 32-bit Support, 64-bit Support
-# Windows 10,Unproven,Unproven
-# Windows 8.1,Unproven,Unproven
-# Windows 8,Unproven,Unproven
-# Windows 7,Unproven,Unproven
+# Windows 10,Yes,Yes
+# Windows 8.1,No,No
+# Windows 8,No,No
+# Windows 7,No,No
 # Server 2016,NA,Unproven
-# Server 2012 R2,NA,Unproven
-# Server 2012,NA,Unproven
-# Server 2008 R2,NA,Unproven
+# Server 2012 R2,NA,No
+# Server 2012,NA,No
+# Server 2008 R2,NA,No
 #<<< End of Script Support >>>
 
 # Script Assets ###################################################################################
@@ -41,21 +41,19 @@ VMR_ReadyMessagingEnvironment
 # Start of script work ############################################################################
 $ArrayScriptExitResult = @()
 
-$Env:VMRWindowsOperatingSystem
-$Env:VMRWindowsArchitecture
-$Env:VMRWindowsVersion
+$VersionAndBitness = $([Environment]::GetEnvironmentVariable("VMRWindowsVersion","Machine")) + ' ' + $([Environment]::GetEnvironmentVariable("VMRWindowsArchitecture","Machine"))
 
-#get the above then do a switch to run the code, this will allow growth then new windows version gets release
-#need to split via bitness as well as the ADK cabs have similar names.
+Switch ($VersionAndBitness) 
+    {'10.0.14393 32-bit'    {$Installer = "$VMRCollateral\$VersionAndBitness\Appman Sequencer on x86-x86_en-us.msi"
+                             $ScriptExitResult = (Start-Process -FilePath msiexec.exe -ArgumentList "/i `"$Installer`" AcceptEULA=1 CEIPOPTIN=0 MUOPTIN=0 REBOOT=ReallySuppress /qn" -Wait -Passthru).ExitCode}
+     '10.0.14393 64-bit'    {$Installer = "$VMRCollateral\$VersionAndBitness\Appman Sequencer on amd64-x64_en-us.msi"
+                             $ScriptExitResult = (Start-Process -FilePath msiexec.exe -ArgumentList "/i `"$Installer`" AcceptEULA=1 CEIPOPTIN=0 MUOPTIN=0 REBOOT=ReallySuppress /qn" -Wait -Passthru).ExitCode}
+     Default                {$ArrayScriptExitResult += 'Error'
+                             Write-Debug 'No match found!'}}
 
 
 
-
-
-Write-Output 'Script code here.'
-Write-Output 'Script code here.'
-
-#Use $ArrayScriptExitResult to capture multiple results and check, otherwise delete.
+######Use $ArrayScriptExitResult to capture multiple results and check, otherwise delete.
 $ArrayScriptExitResult += $LASTEXITCODE
 $ArrayScriptExitResult += $?
 

@@ -1,6 +1,10 @@
 ﻿<#
 .SYNOPSIS
-    Installs Installshield Repackager 11.5.
+    Installs Installshield Repackager 5.
+    
+    Download and information available via the links below.
+    https://technet.microsoft.com/en-us/library/bb490284.aspx?f=255&MSPPError=-2147217396
+    http://leinss.com/blog/?p=240
  
 .LINK
 Author:.......http://www.linkedin.com/in/rileylim
@@ -39,9 +43,9 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
-$Installer = "$VMRCollateral\Repackager.msi"
+$Installer = "$VMRCollateral\InstallShield Repackager.msi"
 
-$ScriptExitResult = (Start-Process -FilePath msiexec.exe -ArgumentList "/i $Installer USERNAME=`"Repackager User`" /qn" -Wait -Passthru).ExitCode
+$ScriptExitResult = (Start-Process -FilePath msiexec.exe -ArgumentList "/i `"$Installer`" USERNAME=`"Repackager User`" /qn" -Wait -Passthru).ExitCode
 
 $ScriptExitResult >> $VMRScriptLog
 

@@ -17,4 +17,4 @@
 *.RTF	 diff=astextplain
 
 # Custom Attributes
-*.ps1	 diff=astextplain
+*.ps1	 diff=astextplain	eol=crlf
