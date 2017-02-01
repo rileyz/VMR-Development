@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-    Sets visual effects settings for better virtual machine preformace globally.
+    Sets visual effects settings for better virtual machine Performance globally.
  
 .LINK
 Author:.......http://www.linkedin.com/in/rileylim
@@ -19,6 +19,10 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Server 2012,NA,Unproven
 # Server 2008 R2,NA,Unproven
 #<<< End of Script Support >>>
+
+# Script Assets ###################################################################################
+# None
+#<<< End of Script Assets >>>
 
 
 
@@ -59,7 +63,7 @@ $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\
 $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\MenuAnimation' -RegistryValueName 'DefaultValue' -RegistryValueData '0' -RegistryValueType 'DWord'
 
 #Set for script invoker (Administrator) account.
-Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name UserPreferencesMask -Value ([byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00))
+Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name UserPreferencesMask -Value ([Byte[]](0x90,0x12,0x03,0x80,0x10,0x00,0x00,0x00))
 $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKCU:\Control Panel\Desktop' -RegistryValueName 'DragFullWindows' -RegistryValueData '1' -RegistryValueType 'String'
 $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKCU:\Control Panel\Desktop' -RegistryValueName 'FontSmoothing' -RegistryValueData '2' -RegistryValueType 'String'
 $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKCU:\Control Panel\Desktop\WindowMetrics' -RegistryValueName 'MinAnimate' -RegistryValueData '0' -RegistryValueType 'String'

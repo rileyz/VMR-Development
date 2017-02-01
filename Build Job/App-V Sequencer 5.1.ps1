@@ -7,4 +7,4 @@ VMR_RunModule -Module Framework\Module_Software-App-V-SequencerPVADShortcut.ps1
 
 Write-Output 'Installing Application Virtualization Sequencer Custom Configuration.'
 VMR_RunModule -Module Framework\Module_Software-App-V-SequencerConfiguration.ps1
-#<<< End of Application Virtualization 5.0 Sequencer Build >>>
+#<<< End of Application Virtualization 5.1 Sequencer Build >>>

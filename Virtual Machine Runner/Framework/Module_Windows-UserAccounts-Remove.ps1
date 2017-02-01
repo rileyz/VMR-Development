@@ -10,6 +10,11 @@
 # Server 2008 R2,NA,Unproven
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: UserAccountExceptions.csv
+# Asset: GetLocalAccount\GetLocalAccount.ps1
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

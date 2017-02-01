@@ -21,7 +21,7 @@ Author:.......http://www.linkedin.com/in/rileylim
 #<<< End of Script Support >>>
 
 # Script Assets ###################################################################################
-# 
+# None
 #<<< End of Script Assets >>>
 
 
@@ -40,27 +40,27 @@ VMR_ReadyMessagingEnvironment
 
 # Start of script work ############################################################################
 If (Test-Path 'C:\Program Files\Microsoft Application Virtualization\Sequencer\Sequencer.exe')
-        {$Directory = 'C:\Program Files\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
+        {$Target = 'C:\Program Files\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
          $Shortcut = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Application Virtualization Sequencer\Squencer with PVAD Enabled.lnk'
 
          $WshShell = New-Object -comObject WScript.Shell
          $Shortcut = $WshShell.CreateShortcut("$Shortcut")
          $Shortcut.Arguments = '-EnablePVADControl'
-         $Shortcut.IconLocation = '%SystemRoot%\Installer\{EDC5FCA0-0D53-4F9C-9EBC-0A1919C96B18}\Sequencer.exe'
-         $Shortcut.TargetPath = "$Directory"
+         $Shortcut.IconLocation = "$Target, 2"
+         $Shortcut.TargetPath = "$Target"
          $Shortcut.Save()
          
          If (Test-Path $Shortcut){$ArrayScriptExitResult += 0}}
 
 If (Test-Path 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe')
-        {$Directory = 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
+        {$Target = 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
          $Shortcut = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Windows Kits\Windows ADK\Squencer with PVAD Enabled.lnk'
 
          $WshShell = New-Object -comObject WScript.Shell
          $Shortcut = $WshShell.CreateShortcut("$Shortcut")
          $Shortcut.Arguments = '-EnablePVADControl'
-         $Shortcut.IconLocation = 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
-         $Shortcut.TargetPath = "$Directory"
+         $Shortcut.IconLocation = "$Target, 2"
+         $Shortcut.TargetPath = "$Target"
          $Shortcut.Save()
          
          If (Test-Path $Shortcut){$ArrayScriptExitResult += 0}}

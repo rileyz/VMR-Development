@@ -20,6 +20,13 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: SW_DVD5_Office_Professional_Plus_2013_64Bit_English_MLF_X18-55297.ISO\setup.exe
+# Asset: SW_DVD5_Office_Professional_Plus_2013_W32_English_MLF_X18-55138.ISO\setup.exe
+# Asset: SW_DVD5_Office_Professional_Plus_2016_64Bit_English_MLF_X20-42432.ISO\setup.exe
+# Asset: SW_DVD5_Office_Professional_Plus_2016_W32_English_MLF_X20-41353.ISO\setup.exe
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

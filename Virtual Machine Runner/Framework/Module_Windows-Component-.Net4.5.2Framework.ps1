@@ -10,6 +10,10 @@
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: NDP452-KB2901907-x86-x64-AllOS-ENU.exe
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

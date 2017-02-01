@@ -10,6 +10,10 @@
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# None
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################
@@ -25,15 +29,21 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
-$Result32 = (Start-Process -FilePath "C:\Windows\Microsoft.NET\Framework\v4.0.30319\ngen.exe" -ArgumentList "executeQueuedItems" -Wait -PassThru).ExitCode
+If (($Result32 = (Start-Process -FilePath "C:\Windows\Microsoft.NET\Framework\v4.0.30319\ngen.exe" -ArgumentList "executeQueuedItems" -Wait -PassThru).ExitCode) -eq -1)
+        {Write-Output 'Exit -1 detcted, running again.'
+         $Result32 = (Start-Process -FilePath "C:\Windows\Microsoft.NET\Framework\v4.0.30319\ngen.exe" -ArgumentList "executeQueuedItems" -Wait -PassThru).ExitCode}
 
 If (([Environment]::GetEnvironmentVariable("VMRWindowsArchitecture","Machine")) -eq '64-bit')
-        {$Result64 = (Start-Process -FilePath "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\ngen.exe" -ArgumentList "executeQueuedItems" -Wait -PassThru).ExitCode} 
+        {If (($Result64 = (Start-Process -FilePath "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\ngen.exe" -ArgumentList "executeQueuedItems" -Wait -PassThru).ExitCode) -eq -1)
+                 {Write-Output 'Exit -1 detcted, running again.'
+                  $Result64 = (Start-Process -FilePath "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\ngen.exe" -ArgumentList "executeQueuedItems" -Wait -PassThru).ExitCode}} 
     Else{$Result64 = '0'}
 
 If ($Result32 -eq '0' -and ($Result64 -eq '0'))
         {$Result = '0'}
-    Else{$Result = 'Error'}
+    Else{$Result = 'Error'
+         "Result32: $Result32" >> $VMRScriptLog
+         "Result64: $Result64" >> $VMRScriptLog}
 
 ($ScriptExitResult = $Result) >> $VMRScriptLog
 

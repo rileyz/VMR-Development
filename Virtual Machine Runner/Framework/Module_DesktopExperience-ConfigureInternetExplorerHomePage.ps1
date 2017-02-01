@@ -20,10 +20,14 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# None
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################
-Param([string]$URL)
+Param([String]$URL)
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 . "$ScriptPath\..\Framework\Core_CommonFunctions.ps1"
 $VMRCollateral = VMR_ScriptInformation -CollateralFolder

@@ -10,6 +10,11 @@
 # Server 2008 R2,No,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: Windows6.1-KB3020369-x64.msu
+# Asset: Windows6.1-KB3020369-x86.msu
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

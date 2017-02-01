@@ -1,6 +1,6 @@
 ﻿# Start Windows Server 2016 Build #####################################################################
-Write-Output 'Adjusting Power Plan to High Preformace.'
-VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPreformace-GlobalEnable.ps1
+Write-Output 'Adjusting Power Plan to High Performance.'
+VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPerformance-GlobalEnable.ps1
 
 Write-Output 'Installing Windows Server 2016 updates via WSUSOffline.'
 VMR_RunModule -RerunUntilComplete -WaitForWindowsUpdateWorkerProcess -Module Framework\Module_Windows-WindowsUpdate-WSUSOffline.ps1

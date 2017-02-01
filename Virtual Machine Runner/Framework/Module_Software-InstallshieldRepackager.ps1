@@ -25,7 +25,7 @@ Author:.......http://www.linkedin.com/in/rileylim
 #<<< End of Script Support >>>
 
 # Script Assets ###################################################################################
-# 
+# Asset: InstallShield Repackager.msi
 #<<< End of Script Assets >>>
 
 

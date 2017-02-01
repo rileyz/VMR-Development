@@ -20,6 +20,12 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: appv_client_MSI_x64.msi
+# Asset: appv_client_MSI_x86.msi
+# Asset: appv_client_setup.exe
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################
@@ -35,7 +41,22 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
+$ServiceName = 'UI0Detect'
+$QueryString = "Select StartMode From Win32_Service Where Name='" + $ServiceName + "'"
+$Service = Get-WmiObject -Query $QueryString
+
+If ($Service.StartMode -ne $null)
+    {Write-Verbose 'Service $ServiceName present, stopping and disabling service.'
+     Stop-Service -Name $ServiceName
+     Set-Service -Name $ServiceName -StartupType Disabled}
+Else{Write-Verbose 'Service $ServiceName not present.'}
+
 $Process = Start-Process -FilePath $VMRCollateral\appv_client_setup.exe -ArgumentList '/q /AcceptEULA /CEIPOPTIN=0 /MUOPTIN=0 /NoRestart' -Wait -PassThru
+
+If ($Service.StartMode -ne $null)
+    {Write-Verbose 'Service $ServiceName present, setting Startup Type to Manual.'
+     Set-Service -Name $ServiceName -StartupType Manual}
+Else{Write-Verbose 'Service $ServiceName not present.'}
 
 ($ScriptExitResult = $Process.ExitCode) >> $VMRScriptLog
 

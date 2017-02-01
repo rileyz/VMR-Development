@@ -10,6 +10,10 @@
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: dotNetFx40_Full_x86_x64.exe
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

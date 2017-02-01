@@ -9,6 +9,11 @@
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: windows6.1-KB976932-X64.exe
+# Asset: windows6.1-KB976932-x86.exe
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

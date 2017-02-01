@@ -1,4 +1,4 @@
-﻿# Start Windows Installer Repackager Build ########################################################
+﻿# Shared Sequencer Configuration Windows 10 #######################################################
 #Setting Wallpaper for Administrator.
 Write-Output 'Setting Wallpaper for Administrator.'
 VMR_RunModule -Module Framework\Module_DesktopExperience-SetWallPaper.ps1 -Arguments "-Wallpaper 'Sequencer.jpg' -PicturePosition 'Center' -DesktopColour '229 115 0'"
@@ -14,4 +14,4 @@ VMR_RunModule -Module Framework\Module_Windows-WindowsDefender-GlobalDisable.ps1
 #Hide Windows 10 Search Box.
 Write-Output 'Hide Windows 10 Search Box.'
 VMR_RunModule -Module Framework\Module_DesktopExperience-ConfigureSearchBox.ps1
-#<<< End of Windows Installer Repackager Build >>>
+#<<< End of Shared Sequencer Configuration Windows 10 >>>

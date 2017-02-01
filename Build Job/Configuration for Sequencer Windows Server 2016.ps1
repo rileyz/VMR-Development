@@ -10,4 +10,4 @@ VMR_RunModule -Module Framework\Module_Windows-Services-GlobalConfigure.ps1 -Arg
 #Disable Windows Defender.
 Write-Output 'Disable Windows Defender.'
 VMR_RunModule -Module Framework\Module_Windows-WindowsDefender-GlobalDisable.ps1
-#<<< End of Shared Sequencer Configuration Windows Server 2008 R2 Build >>>
+#<<< End of Shared Sequencer Configuration Windows Server 2016 Build >>>

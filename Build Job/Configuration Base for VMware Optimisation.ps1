@@ -31,7 +31,7 @@ If ($VM_OptimiseIOPerformance -eq $true)
          Write-Verbose 'Disk I/O performance optimisations have been applied.'}
 
 If ($VM_EmptyDVDDrive -eq $true)
-        {Write-Output '  Ensuring first avaliable virtual DVD drive is empty.'
+        {Write-Output '  Ensuring first available virtual DVD drive is empty.'
          Write-Output '   If more than one DVD drive is available, it will not be checked.'
          [System.Collections.ArrayList]$VMXFileInMemory = UpdateVMX -VMX $VMXFileInMemory -ConfigurationItem 'sata0:1.deviceType' -Value 'cdrom-raw'
          [System.Collections.ArrayList]$VMXFileInMemory = UpdateVMX -VMX $VMXFileInMemory -ConfigurationItem 'sata0:1.fileName' -Value 'auto detect'

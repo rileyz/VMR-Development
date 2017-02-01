@@ -1,6 +1,6 @@
 ﻿# Start Windows 8 Build ###########################################################################
-Write-Output 'Adjusting Power Plan to High Preformace.'
-VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPreformace-GlobalEnable.ps1
+Write-Output 'Adjusting Power Plan to High Performance.'
+VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPerformance-GlobalEnable.ps1
 
 Write-Output 'Disabling System Restore'
 VMR_RunModule -Module Framework\Module_Windows-SystemProtection-GlobalDisable.ps1

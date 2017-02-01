@@ -20,6 +20,10 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Server 2008 R2,NA,Unproven
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# None
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

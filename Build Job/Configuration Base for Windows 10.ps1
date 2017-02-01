@@ -1,6 +1,6 @@
 ﻿# Start Windows 10 Build ##########################################################################
-Write-Output 'Adjusting Power Plan to High Preformace.'
-VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPreformace-GlobalEnable.ps1
+Write-Output 'Adjusting Power Plan to High Performance.'
+VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPerformance-GlobalEnable.ps1
 
 Write-Output 'Installing Windows 10 updates via WSUSOffline.'
 VMR_RunModule -RerunUntilComplete -WaitForWindowsUpdateWorkerProcess -Module Framework\Module_Windows-WindowsUpdate-WSUSOffline.ps1

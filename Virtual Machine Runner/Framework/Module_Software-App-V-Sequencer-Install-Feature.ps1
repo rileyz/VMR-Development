@@ -14,14 +14,15 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Windows 8.1,No,No
 # Windows 8,No,No
 # Windows 7,No,No
-# Server 2016,NA,Unproven
+# Server 2016,NA,Yes
 # Server 2012 R2,NA,No
 # Server 2012,NA,No
 # Server 2008 R2,NA,No
 #<<< End of Script Support >>>
 
 # Script Assets ###################################################################################
-# 
+# Asset: 10.0.14393 32-bit\Appman Sequencer on x86-x86_en-us.msi
+# Asset: 10.0.14393 64-bit\Appman Sequencer on amd64-x64_en-us.msi
 #<<< End of Script Assets >>>
 
 

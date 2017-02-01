@@ -10,10 +10,19 @@
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: BaseConfiguration_Windows7.csv
+# Asset: BaseConfiguration_Windows8.csv
+# Asset: BaseConfiguration_Windows10.csv
+# Asset: BaseConfiguration_WindowsServer2008R2.csv
+# Asset: BaseConfiguration_WindowsServer2012.csv
+# Asset: BaseConfiguration_WindowsServer2016.csv
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################
-Param([string]$TaskSchedulesCSV)
+Param([String]$TaskSchedulesCSV)
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 . "$ScriptPath\..\Framework\Core_CommonFunctions.ps1"
 $VMRCollateral = VMR_ScriptInformation -CollateralFolder

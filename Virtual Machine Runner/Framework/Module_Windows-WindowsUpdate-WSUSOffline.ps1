@@ -10,6 +10,11 @@
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: UpdateGenerator.exe
+# Asset: client\cmd\DoUpdate.cmd
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

@@ -1,4 +1,4 @@
-﻿# Start Windows Installer Repackager Build ########################################################
+﻿# Shared Sequencer Configuration Windows 8 ########################################################
 #Setting Wallpaper for Administrator.
 Write-Output 'Setting Wallpaper for Administrator.'
 VMR_RunModule -Module Framework\Module_DesktopExperience-SetWallPaper.ps1 -Arguments "-Wallpaper 'Sequencer.jpg' -PicturePosition 'Center' -DesktopColour '229 115 0'"
@@ -15,7 +15,7 @@ VMR_RunModule -Module Framework\Module_Windows-HelpTips-GlobalDisable.ps1
 Write-Output 'Disable Windows Defender.'
 VMR_RunModule -Module Framework\Module_Windows-WindowsDefender-GlobalDisable.ps1
 
-#Removing Mordern Apps from Administrator.
-Write-Output 'Removing Mordern Apps from Administrator.'
+#Removing Modern Apps from  Administrator.
+Write-Output 'Removing Modern Apps from  Administrator.'
 VMR_RunModule -Module Framework\Module_DesktopExperience-RemoveAppXPackages.ps1
-#<<< End of Windows Installer Repackager Build >>>
+#<<< End of Shared Sequencer Configuration Windows 8 >>>

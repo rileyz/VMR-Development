@@ -41,23 +41,24 @@ $VMRScriptLocation = VMR_ScriptInformation -ScriptFolder
 $VMRScriptFile = VMR_ScriptInformation -ScriptName
 
 $Source = "$VMRScriptLocation\Virtual Machine Runner"
+$VMwareVIX = 'C:\Program Files (x86)\VMware\VMware VIX'
 $VM_VMRTarget = 'C:\VirtualMachineRunner'
 $VM_PowerShell = 'C:\Windows\System32\WindowsPowershell\v1.0\PowerShell.exe'
 $VMs = (Get-FileName "C:\Users\$env:username\Documents\Virtual Machines\")
 $GuestUserName  = 'Administrator'
-$GuestPassword  = Get-Password
+$GuestPassword  = Get-Password                 #Note: Function and variable are not secure.
 
 #User modifiable debugging variables.
 $VerbosePreference        = 'SilentlyContinue' #SilentlyContinue|Continue
 $DebugPreference          = 'SilentlyContinue' #SilentlyContinue|Continue
 $BuildErrorPreference     = 'RetryThenSkip'    #Pause|RetryThenSkip|RetryThenStop|Stop
-$BuildErrorRetryAttempts  = '7'                #0 for unlimited attempts
+$BuildErrorRetryAttempts  = '7'                #Note: 0 for unlimited attempts
 $PostBootWaitInterval     = '30'
 $ForceRunUnprovenScripts  = $false
 
 #User modifiable Virtual Machine Runner variables.
-$VM_DisableScreenScaling  = $true              #Disables VMware Display Scaling to virtual machine.
-$VM_EmptyDVDDrive         = $true              #Ejects media from virtual machine DVD drive.
+$VM_DisableScreenScaling  = $true              #Note: Disables VMware Display Scaling to virtual machine.
+$VM_EmptyDVDDrive         = $true              #Note: Ejects media from virtual machine DVD drive.
 $VM_OptimiseIOPerformance = $true
 
 $MimicHomeDrives    = 'H:Home'                 #None|H:Home
@@ -85,6 +86,7 @@ $AppVClient5SP2HF5  = $true
 
 $AppVSeq5SP3        = $true
 $AppVClient5SP3     = $true
+$AppVClient5SP3HF1  = $true
 $AppVClient5SP3HF2  = $true
 $AppVClient5SP3HF3  = $true
 
@@ -92,10 +94,14 @@ $AppVSeq51          = $true
 $AppVClient51       = $true
 $AppVClient51HF1    = $true
 $AppVClient51HF2    = $true
+$AppVClient51HF3    = $true
 $AppVClient51HF4    = $true
+$AppVClient51HF5    = $true
+$AppVClient51HF6    = $true
+$AppVClient51HF7    = $true
 
-$AppVInBoxClient    = $true                    #App-V Client is now part of the operating system.
-$AppVADKSequencer   = $true                    #Sequencer via the Windows Assessment and Deployment Kit.
+$AppVInBoxClient    = $true                    #Note: App-V Client is now part of the operating system.
+$AppVADKSequencer   = $true                    #Note: Sequencer via the Windows Assessment and Deployment Kit.
 
 Write-Verbose 'Variables prepared.'
 #<<< End of Setting up housekeeping for variables >>>

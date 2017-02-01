@@ -1,6 +1,6 @@
 ﻿# Start Windows Server 2008 R2 Build ##############################################################
-Write-Output 'Adjusting Power Plan to High Preformace.'
-VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPreformace-GlobalEnable.ps1
+Write-Output 'Adjusting Power Plan to High Performance.'
+VMR_RunModule -Module Framework\Module_Windows-PowerModeHighPerformance-GlobalEnable.ps1
 
 Write-Output 'Installing Windows 2008 R2 Service Pack 1 on the virtual machine.'
 VMR_RunModule -Module Framework\Module_Windows-WindowsUpdate-KB976932.ps1
@@ -79,4 +79,4 @@ VMR_RunModule -Module Framework\Module_Software-OfficeProfessionalPlus.ps1 -Argu
 
 Write-Output 'Installing Windows 2008 R2 and Office updates via WSUSOffline.'
 VMR_RunModule -RerunUntilComplete -Module Framework\Module_Windows-WindowsUpdate-WSUSOffline.ps1
-#<<< End of Windows Server 2008 R2 Build Build >>>
+#<<< End of Windows Server 2008 R2 Build >>>

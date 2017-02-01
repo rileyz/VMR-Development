@@ -14,14 +14,14 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Windows 8.1,Yes,Yes
 # Windows 8,Yes,Yes
 # Windows 7,Yes,Yes
-# Server 2016,NA,Unproven
-# Server 2012 R2,NA,Unproven
-# Server 2012,NA,Unproven
-# Server 2008 R2,NA,Unproven
+# Server 2016,NA,Yes
+# Server 2012 R2,NA,Yes
+# Server 2012,NA,Yes
+# Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
 # Script Assets ###################################################################################
-# 
+# Asset: VMR Map Simulated Mapped Drives.ps1
 #<<< End of Script Assets >>>
 
 

@@ -2,7 +2,7 @@
 Write-Output 'Installing Application Virtualization 5.1 Client.'
 VMR_RunModule -Module Framework\Module_Software-App-V-Client5.1.ps1
 
-Write-Output 'Installing Application Virtualization 5.1, Hotfx 1.'
+Write-Output 'Installing Application Virtualization 5.1, Hotfix  1.'
 VMR_RunModule -Module Framework\Module_Software-App-V-Client5.1HF1.ps1
 
 Write-Output 'Installing Application Virtualization 5.0 Client UI for SP2 and greater'

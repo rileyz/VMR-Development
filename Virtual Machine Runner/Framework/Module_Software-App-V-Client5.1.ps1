@@ -20,6 +20,10 @@ Author:.......http://www.linkedin.com/in/rileylim
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: appv_client_setup.exe
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

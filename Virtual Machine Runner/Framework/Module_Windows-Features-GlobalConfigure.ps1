@@ -10,6 +10,13 @@
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# Asset: BaseConfiguration_Windows7.csv
+# Asset: BaseConfiguration_Windows10.csv
+# Asset: SxS Windows OS Version 10.0 32-Bit\microsoft-windows-netfx3-ondemand-package.cab
+# Asset: SxS Windows OS Version 10.0 64-Bit\microsoft-windows-netfx3-ondemand-package.cab
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################

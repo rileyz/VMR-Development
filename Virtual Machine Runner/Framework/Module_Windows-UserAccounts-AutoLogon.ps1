@@ -10,11 +10,15 @@
 # Server 2008 R2,NA,Yes
 #<<< End of Script Support >>>
 
+# Script Assets ###################################################################################
+# None
+#<<< End of Script Assets >>>
+
 
 
 # Setting up housekeeping #########################################################################
-Param([string]$AutoLogonUserName,
-      [string]$AutoLogonPassword)
+Param([String]$AutoLogonUserName,
+      [String]$AutoLogonPassword)
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 . "$ScriptPath\..\Framework\Core_CommonFunctions.ps1"
 $VMRCollateral = VMR_ScriptInformation -CollateralFolder

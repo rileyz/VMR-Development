@@ -1,24 +1,42 @@
 ﻿# Setting up housekeeping for virtual machine #####################################################
 Write-Output 'Starting housekeeping actions, preparing virtual machine.'
 
+If ($myInvocation.ScriptName -eq '')
+        {Write-Warning 'Unable to discover parent script, this is running in an unsupported manner.'
+         Throw}
+    Else{$VMR_Buildout = Get-Content $myInvocation.ScriptName}
+
+If ((Test-Path "$ScriptPath\Virtual Machine Runner\Logs") -eq $false) {$null = New-Item -ItemType Directory "$ScriptPath\Virtual Machine Runner\Logs"}
+
+#Starting asset checks.
+Write-Output 'Starting asynchronous asset inventorying process.'
+If ($VerbosePreference -or $DebugPreference -ne 'SilentlyContinue')
+        {$RunVerbose = $true}
+    Else{$RunVerbose = $false}
+$AssetCheckJob = Start-Job -Name AssetCheck -FilePath "$ScriptPath\Build Job\Build Asset Inventorying.ps1" -ArgumentList @($ScriptPath, $RunVerbose)
+$AssetCheckHasRun = $null
+
 #Setup VIX PS drive.
 Write-Output 'Setting up VIX PS drive.'
 If ((Test-Path VIX:\) -eq $false)
-        {$null = New-PSDrive -Name VIX -PSProvider FileSystem -Root 'C:\Program Files (x86)\VMware\VMware VIX'
+        {$null = New-PSDrive -Name VIX -PSProvider FileSystem -Root $VMwareVIX
          Set-Location VIX:
          Write-Verbose 'VIX PS drive is ready.'}
-    Else{Write-Verbose 'No actions needed, VIX PS drive already mounted.'}
+    Else{If ($((Get-Item -Path ".\" -Verbose).FullName) -eq $VMwareVIX)
+                 {Write-Verbose 'No actions needed, VIX PS drive already mounted.'}
+             Else{Write-Verbose 'VIX mounted but not current directory, switching to VIX PS drive.'
+                  Set-Location VIX:}}
 
-#Checking that script is running in PowerShell ISE
+#Checking that script is running in PowerShell ISE.
 If ($Host.Name -notlike '*ISE*') 
         {Write-Warning 'Script has not detected the host as Windows PowerShell ISE.'
-         Write-Warning 'Please run script in Windows PowerShell ISE for a better experience.'}
+         Write-Warning 'Please run script in Windows PowerShell ISE for an enhanced experience.'}
 
 #Multiple build loop block.
 Foreach ($VM in $VMs)
    {Write-Output ''
     Write-Output ''
-    Write-Output "Starting build on `"$((Get-ChildItem -Path $VM).Name)`" at $(Get-Date)."
+    Write-Output "Starting build on `"$((Get-ChildItem -Path $VM).Name)`" at $(($BuildDate = Get-Date))."
     $StopWatch = [Diagnostics.Stopwatch]::StartNew()
     
     #Creating safety snapshot for manual rollback if build fails.
@@ -30,7 +48,7 @@ Foreach ($VM in $VMs)
              VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Pre-flight Safety Snapshot'}
     
     #Start the target VM.
-    Write-Output ' ·Starting the virtual machine.'
+    Write-Output ' ⚡Starting the virtual machine.'
     Write-Debug "Staring virtual machine: `"$VM`""
     &.\vmrun -T ws start $VM
 
@@ -43,6 +61,19 @@ Foreach ($VM in $VMs)
              $VM_OperatingSystem = &.\vmrun -T ws -gu $GuestUserName -gp $GuestPassword readVariable $VM guestEnv VMRWindowsOperatingSystem
              $VM_Architecture = &.\vmrun -T ws -gu $GuestUserName -gp $GuestPassword readVariable $VM guestEnv VMRWindowsArchitecture
              $VM_Version = &.\vmrun -T ws -gu $GuestUserName -gp $GuestPassword readVariable $VM guestEnv VMRWindowsVersion
+             
+             $RegEx = [RegEx]'Release Version.*?\d+.\d\d'
+             $RleaseVersion = Select-String -Pattern $RegEx -InputObject $VMR_Buildout -AllMatches | foreach {$_.matches}
+             
+             $RegEx = [RegEx]'\d.\d\d'
+             $RleaseVersion = Select-String -Pattern $RegEx -InputObject $RleaseVersion[0].Value -AllMatches  | foreach {$_.matches}
+             Write-Debug "VMR Release Version: $($RleaseVersion.Value)"
+             
+             $ComputerDescription = "Built: $($BuildDate.Day) $((Get-Culture).DateTimeFormat.GetMonthName($BuildDate.Month)), $($BuildDate.Year) | Builder Release Version: $($RleaseVersion.Value)"
+             &.\vmrun -T ws -gu $GuestUserName -gp $GuestPassword runProgramInGuest $VM $VM_PowerShell "REG ADD 'HKLM\SYSTEM\CurrentControlSet\services\LanmanServer\Parameters' /V 'srvcomment' /D '$ComputerDescription' /F"
+             &.\vmrun -T ws -gu $GuestUserName -gp $GuestPassword runProgramInGuest $VM $VM_PowerShell "REG ADD 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation' /V 'SupportHours' /D 'Riley Lim | http://linkedin.com/in/rileylim' /F"
+             &.\vmrun -T ws -gu $GuestUserName -gp $GuestPassword runProgramInGuest $VM $VM_PowerShell "REG ADD 'HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\OEMInformation' /V 'SupportPhone' /D 'Built with Virtual Machine Runner' /F"
+
              VMR_RemoveJunctionPoint
              VMWarePowerControl -SoftStop
     }
@@ -50,6 +81,24 @@ Foreach ($VM in $VMs)
              Write-Warning 'the Administrator account not being enabled on the virtual machine.' ; Continue}
 
     Write-Verbose 'Virtual machine prepared.'
+
+    #Pulling asset check for results.
+    Write-Output 'Pulling asynchronous asset inventorying process and checking results.'
+    If ($AssetCheckHasRun -eq $null)
+            {While ($AssetCheckJob.State -ne 'Completed') 
+                  {Write-Debug 'Waiting for asynchronous asset inventorying job to complete.'
+                   Start-Sleep -Seconds 1}
+
+            $AssetCheckResults = Get-Job -Id $AssetCheckJob.Id | Receive-Job -Keep
+            Remove-Job -Id $AssetCheckJob.Id 
+
+            If (($AssetCheckResults -clike '*Errors detected with *').Count -gt 0)
+                    {$AssetCheckResults
+                     Throw}
+                Else{Write-Verbose 'No errors detected.'}
+
+            $AssetCheckHasRun = $true}
+
     Write-Output "All Housekeeping actions completed, ready to build on $VM_OperatingSystem $VM_Architecture."
     #<<< End of Setting up housekeeping for virtual machine >>>
 
@@ -57,13 +106,13 @@ Foreach ($VM in $VMs)
 
     # Start of Build Runner Logic #####################################################################
     If ([Version]$VM_Version -lt '10.0.14393')
-           {# Start of App-V as a Installation Logic ##########################################################
-            Write-Output 'Shifting to App-V as a installation branch.'
+           {# Start of App-V as an installation  Logic ##########################################################
+            Write-Verbose 'Shifting to App-V as an installation branch.'
             If ($Repackager -or $AppVSeq5 -or $AppVClient5 -or $AppVClient5HF1 -or $AppVSeq5SP1 -or $AppVClient5SP1 -or $AppVClient5SP1HF3 -or $AppVSeq5SP2 -or $AppVClient5SP2 -or $AppVClient5SP2HF2 -or $AppVSeq5SP2HF4 -or $AppVClient5SP2HF4 -or $AppVClient5SP2HF5 -eq $true)
                     {$Base = $true}
                 Else{$Base = $null}
 
-            If ($AppVSeq5SP3 -or $AppVClient5SP3 -or $AppVClient5SP3HF2 -or $AppVClient5SP3HF3 -or $AppVSeq51 -or $AppVClient51 -or $AppVClient51HF1 -or $AppVClient51HF2 -or $AppVClient51HF4 -eq $true)
+            If ($AppVSeq5SP3 -or $AppVClient5SP3 -or $AppVClient5SP3HF1 -or $AppVClient5SP3HF2 -or $AppVClient5SP3HF3 -or $AppVSeq51 -or $AppVClient51 -or $AppVClient51HF1 -or $AppVClient51HF2 -or $AppVClient51HF3 -eq $true -or $AppVClient51HF4 -eq $true -or $AppVClient51HF5 -eq $true -or $AppVClient51HF6 -eq $true  -or $AppVClient51HF7 -eq $true)
                     {$Base5SP3 = $true}
                 Else{$Base5SP3 = $null}
 
@@ -116,7 +165,6 @@ Foreach ($VM in $VMs)
                                                           . "$VMRScriptLocation\Build Job\Configuration Base for Windows Server 2008 R2.ps1" ; Break}
                                     Default              {Write-Warning 'Unknown Operating System'}}
          
-                               . "$VMRScriptLocation\Build Job\App-V Prerequisites 5.0.ps1"
                                . "$VMRScriptLocation\Build Job\App-V Prerequisites 5.0SP3.ps1"
                                . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
                                VMR_RemoveJunctionPoint
@@ -347,6 +395,16 @@ Foreach ($VM in $VMs)
                      VMWarePowerControl -SoftStop
                      VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.0SP3'}
 
+            If ($AppVClient5SP3HF1 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start
+                     VMR_CreateJunctionPoint
+                     . "$VMRScriptLocation\Build Job\App-V Client 5.0SP3HF1.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.0SP3HF1'}
+
             If ($AppVClient5SP3HF2 -eq $true)
                     {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
                      VMWarePowerControl -Start
@@ -418,6 +476,16 @@ Foreach ($VM in $VMs)
                      VMWarePowerControl -SoftStop
                      VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF2'}
 
+            If ($AppVClient51HF3 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start
+                     VMR_CreateJunctionPoint
+                     . "$VMRScriptLocation\Build Job\App-V Client 5.1HF3.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF3'}
+
             If ($AppVClient51HF4 -eq $true)
                     {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
                      VMWarePowerControl -Start
@@ -428,12 +496,39 @@ Foreach ($VM in $VMs)
                      VMWarePowerControl -SoftStop
                      VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF4'}
 
-            Invoke-Item $VM}
+            If ($AppVClient51HF5 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start
+                     VMR_CreateJunctionPoint
+                     . "$VMRScriptLocation\Build Job\App-V Client 5.1HF5.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF5'}
 
-            #<<< End of App-V as a Installation Logic >>>
+            If ($AppVClient51HF6 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start
+                     VMR_CreateJunctionPoint
+                     . "$VMRScriptLocation\Build Job\App-V Client 5.1HF6.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF6'}
+
+            If ($AppVClient51HF7 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start
+                     VMR_CreateJunctionPoint
+                     . "$VMRScriptLocation\Build Job\App-V Client 5.1HF7.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF7'}}
+            #<<< End of App-V as an installation  Logic >>>
 
        Else{# Start of App-V as a Feature Logic ###############################################################
-            Write-Output 'Shifting to App-V as a feature branch, Windows version $VM_Version detected.'
+            Write-Verbose "Shifting to App-V as a feature branch, Windows version $VM_Version detected."
 	    
             If ($AppVSeq5 -or $AppVClient5 -or $AppVClient5HF1 -or $AppVSeq5SP1 -or $AppVClient5SP1 -or $AppVClient5SP1HF3 -or $AppVSeq5SP2 -or $AppVClient5SP2 -or $AppVClient5SP2HF2 -or $AppVSeq5SP2HF4 -or $AppVClient5SP2HF4 -or 
                 $AppVClient5SP2HF5 -or $AppVSeq5SP3 -or $AppVClient5SP3 -or $AppVClient5SP3HF2 -or $AppVClient5SP3HF3 -or $AppVSeq51 -or $AppVClient51 -or $AppVClient51HF1 -or $AppVClient51HF2 -or $AppVClient51HF4 -eq $true)
@@ -499,6 +594,10 @@ Foreach ($VM in $VMs)
                      VMWareSnapshotControl -TakeSnapshot -SnapshotName 'App-V Client'}} 
             #<<< End of App-V as a Feature Logic >>>
 
+    VMWareSnapshotControl -RevertSnapshot -SnapshotName 'Pre-flight Safety Snapshot'
+    Invoke-Item $VM
+    VMWareCleanUpDisksViaGUI -VM "$VM" -CheckForIdleInSeconds 20 -MaxWaitingMinutes 5
+    
     $StopWatch.Stop()
     Write-Output "Completed build on `"$((Get-ChildItem -Path $VM).Name)`" at $(Get-Date)."
     Write-Output "Build time was $($StopWatch.Elapsed.Hours) hours and $($StopWatch.Elapsed.Minutes) minutes."

@@ -23,9 +23,9 @@ Author:.......http://www.linkedin.com/in/rileylim
 
 
 # Setting up housekeeping #########################################################################
-Param([string]$Wallpaper,
-      [string][ValidateSet('Center','Stretch','Tile')]$PicturePosition,
-      [string]$DesktopColour)
+Param([String]$Wallpaper,
+      [String][ValidateSet('Center','Stretch','Tile')]$PicturePosition,
+      [String]$DesktopColour)
 $ScriptPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
 . "$ScriptPath\..\Framework\Core_CommonFunctions.ps1"
 $VMRCollateral = VMR_ScriptInformation -CollateralFolder
@@ -34,6 +34,11 @@ $VMRScriptFile = VMR_ScriptInformation -ScriptName
 $VMRScriptLog = VMR_ScriptInformation -ScriptLogLocation
 VMR_ReadyMessagingEnvironment
 #<<< End of Setting up housekeeping >>>
+
+# Script Assets ###################################################################################
+# Asset: Repackager.jpg
+# Asset: Sequencer.jpg
+#<<< End of Script Assets >>>
 
 
 
