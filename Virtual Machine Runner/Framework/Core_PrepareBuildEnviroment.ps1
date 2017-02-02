@@ -1,4 +1,14 @@
-﻿# Start of script work ############################################################################
+﻿<#
+.SYNOPSIS
+    Prepares the build environment variables and source folder.
+ 
+.LINK
+Author:.......http://www.linkedin.com/in/rileylim
+#>
+
+
+
+# Start of script work ############################################################################
 $SymbolicLinkTarget = [Environment]::GetEnvironmentVariable("VMRSymbolicLinkTarget","User")
 $OperatingSystem = ((Get-WmiObject win32_operatingsystem).Caption).TrimEnd()
 $OperatingSystemArchitecture = (Get-WmiObject win32_operatingsystem).OSArchitecture

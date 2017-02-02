@@ -1,4 +1,14 @@
-﻿# Script Support ##################################################################################
+﻿<#
+.SYNOPSIS
+    Clears all Event logs and removes all temporary files to recover space.
+ 
+.LINK
+Author:.......http://www.linkedin.com/in/rileylim
+#>
+
+
+
+# Script Support ##################################################################################
 # Operating System, 32-bit Support, 64-bit Support
 # Windows 10,Yes,Yes
 # Windows 8.1,Yes,Yes
@@ -73,10 +83,10 @@ Remove-Item C:\Windows\Temp\* -Recurse
 &wevtutil el | Foreach-Object {wevtutil cl "$_"} #http://jpwaldin.com/blog/?p=166
 $ArrayScriptExitResult += $?
 
-$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, inculding reboots here.
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
 $SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
 $ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
-$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this varible
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
 
 If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
         {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.

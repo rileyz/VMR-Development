@@ -1,6 +1,7 @@
 ﻿<#
 .SYNOPSIS
     Installs App Deploy Repackager, a tool used to create MSI's.
+    http://www.itninja.com/community/dell-kace-appdeploy-repackager
  
 .LINK
 Author:.......http://www.linkedin.com/in/rileylim

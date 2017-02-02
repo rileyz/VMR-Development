@@ -1,6 +1,7 @@
 ﻿<#
 .SYNOPSIS
-    Enable Remote Desktop Connections for Authenticated Users and adjust Firewall to allow connections globally.
+    Enable Remote Desktop Connections for Authenticated Users and adjust Firewall to allow 
+    connections globally.
  
 .LINK
 Author:.......http://www.linkedin.com/in/rileylim
@@ -49,10 +50,10 @@ $ArrayScriptExitResult += $?
 &net Localgroup "Remote Desktop Users" "NT AUTHORITY\Authenticated Users" /Add
 $ArrayScriptExitResult += $?
 
-$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, inculding reboots here.
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
 $SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
 $ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
-$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this varible
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
 
 If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
         {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.

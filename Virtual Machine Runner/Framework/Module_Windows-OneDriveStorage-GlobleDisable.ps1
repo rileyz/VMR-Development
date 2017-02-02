@@ -1,4 +1,14 @@
-﻿# Script Support ##################################################################################
+﻿<#
+.SYNOPSIS
+    Disables One Drive storage integration globally.
+ 
+.LINK
+Author:.......http://www.linkedin.com/in/rileylim
+#>
+
+
+
+# Script Support ##################################################################################
 # Operating System, 32-bit Support, 64-bit Support
 # Windows 10,Yes,Yes
 # Windows 8.1,Unproven,Unproven

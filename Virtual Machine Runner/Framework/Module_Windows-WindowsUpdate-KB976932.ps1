@@ -1,4 +1,14 @@
-﻿# Script Support ##################################################################################
+﻿<#
+.SYNOPSIS
+    Installs KB976932, Service Pack 1 for Windows 7 and Windows Server 2008 R2.
+ 
+.LINK
+Author:.......http://www.linkedin.com/in/rileylim
+#>
+
+
+
+# Script Support ##################################################################################
 # Operating System, 32-bit Support, 64-bit Support
 # Windows 10,No,No
 # Windows 8.1,No,No

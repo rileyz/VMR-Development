@@ -1,4 +1,14 @@
-﻿# Function List ###################################################################################
+﻿<#
+.SYNOPSIS
+    Shared core common functions required by Virtual Machine Runner.
+ 
+.LINK
+Author:.......http://www.linkedin.com/in/rileylim
+#>
+
+
+
+# Function List ###################################################################################
 Function Get-FileName($InitialDirectory) {   
     Write-Verbose 'Initiating file selection.'
     $null = [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms")

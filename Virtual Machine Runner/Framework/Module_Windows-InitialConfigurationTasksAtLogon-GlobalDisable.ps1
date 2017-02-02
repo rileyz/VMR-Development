@@ -1,4 +1,14 @@
-﻿# Script Support ##################################################################################
+﻿<#
+.SYNOPSIS
+    Disables the launch of Windows Server Initial Configuration Tasks at logon globally.
+ 
+.LINK
+Author:.......http://www.linkedin.com/in/rileylim
+#>
+
+
+
+# Script Support ##################################################################################
 # Operating System, 32-bit Support, 64-bit Support
 # Windows 10,Unproven,Unproven
 # Windows 8.1,Unproven,Unproven

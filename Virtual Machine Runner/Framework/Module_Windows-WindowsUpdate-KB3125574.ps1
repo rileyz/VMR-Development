@@ -1,4 +1,15 @@
-﻿# Script Support ##################################################################################
+﻿<#
+.SYNOPSIS
+    Installs KB3125574, convenience rollup for Windows 7 Service Pack 1 and Windows Server 2008 R2
+    Service Pack 1. 
+ 
+.LINK
+Author:.......http://www.linkedin.com/in/rileylim
+#>
+
+
+
+# Script Support ##################################################################################
 # Operating System, 32-bit Support, 64-bit Support
 # Windows 10,No,No
 # Windows 8.1,No,No

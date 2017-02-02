@@ -1,4 +1,15 @@
-﻿# Script Support ##################################################################################
+﻿<#
+.SYNOPSIS
+    Installs Windows Updates offline via WSUSOffline.
+    http://www.wsusoffline.net
+ 
+.LINK
+Author:.......http://www.linkedin.com/in/rileylim
+#>
+
+
+
+# Script Support ##################################################################################
 # Operating System, 32-bit Support, 64-bit Support
 # Windows 10,Yes,Yes
 # Windows 8.1,Yes,Yes

@@ -75,10 +75,10 @@ $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKCU:\Software\Microsoft\
 $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKCU:\Software\Microsoft\Windows\DWM' -RegistryValueName 'AlwaysHibernateThumbnails' -RegistryValueData '0' -RegistryValueType 'DWord'
 $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKCU:\Software\Microsoft\Windows\DWM' -RegistryValueName 'EnableAeroPeek' -RegistryValueData '0' -RegistryValueType 'DWord' #Windows 8 and above.
 
-$SuccessCodes = @('Example','0','3010')                                                           #List all success codes, inculding reboots here.
+$SuccessCodes = @('Example','0','3010')                                                           #List all success codes, including reboots here.
 $SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
 $ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
-$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this varible
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
 
 If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
         {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.

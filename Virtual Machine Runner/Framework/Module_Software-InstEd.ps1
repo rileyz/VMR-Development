@@ -1,7 +1,8 @@
 ﻿<#
 .SYNOPSIS
     Installs InstEd, a tool used to edit  MSI's.
- 
+    http://www.instedit.com
+
 .LINK
 Author:.......http://www.linkedin.com/in/rileylim
 #>

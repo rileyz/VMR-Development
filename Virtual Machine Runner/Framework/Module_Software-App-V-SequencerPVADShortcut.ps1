@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-    Create a shortcut for Sequencer enabled PVAD.
+    Creates a shortcut for Sequencer enabled PVAD.
  
 .LINK
 Author:.......http://www.linkedin.com/in/rileylim
