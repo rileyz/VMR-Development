@@ -63,8 +63,7 @@ Function Get-FileName($InitialDirectory) {
                                                                                  Else{Write-Verbose 'Virtual machine list is valid.'
                                                                                       Write-Debug 'Returning array of paths from the function, without values from hash table.'
                                                                                       $CheckCSVPaths.Keys}}
-         Default  {Write-Warning 'Function Get-FileName critical error on Switch statement.'
-                   Write-Warning 'Please insure the file selected is correct.' ; Break}}
+         Default  {Write-Warning 'Please insure the file selected is correct.' ; Break}}
  
     #http://blogs.technet.com/b/heyscriptingguy/archive/2009/09/01/hey-scripting-guy-september-1.aspx
 
@@ -1043,8 +1042,11 @@ namespace PInvoke.Win32 {
 	         Write-Verbose "Detecting if computer is idle."
              $null = CheckForIdleUserSession -IdleSeconds $CheckForIdleInSeconds
 	         Write-Verbose 'Changing Window focus and sending key press to start clean up.'
-	         [Microsoft.VisualBasic.Interaction]::AppActivate('Disk Cleanup')
-	         [System.Windows.Forms.SendKeys]::SendWait("%C")
+             $DetectedEAP = $ErrorActionPreference
+             $ErrorActionPreference = 'SilentlyContinue'
+             [Microsoft.VisualBasic.Interaction]::AppActivate('Disk Cleanup')
+	         $ErrorActionPreference = $DetectedEAP
+             [System.Windows.Forms.SendKeys]::SendWait("%C")
              Write-Verbose 'Checking for file locks before proceeding.'
              CheckforVMFileLocks $VM
 

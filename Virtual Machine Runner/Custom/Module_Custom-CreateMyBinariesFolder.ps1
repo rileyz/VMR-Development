@@ -39,6 +39,8 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
+$ArrayScriptExitResult = @()
+
 $Directory = 'C:\Binaries'
 $Shortcut = "C:\Users\$env:username\Desktop\Binaries.lnk"
 
@@ -50,14 +52,27 @@ $Shortcut.TargetPath = "$Directory"
 $Shortcut.Save()
 
 If ((Test-Path $Directory) -eq $true -and ((Test-Path $ScriptPath) -eq $true))
-        {$ScriptExitResult = '0'}
-    Else{$ScriptExitResult = 'Error'}
+        {$ArrayScriptExitResult += '0'}
+    Else{$ArrayScriptExitResult += 'Error'}
+
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
+
+If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
+        {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
+                {$ScriptExitResult = 'Reboot'}
+            Else{$ScriptExitResult = '0'}}
+    Else{$ScriptExitResult = 'Error'
+         $ScriptError >> $VMRScriptLog}
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
-     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}         #Error in setting up user accounts.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
+     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
+     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
                  Write-Host "The script module was unable to trap exit code for $VMRScriptFile."}}
 #<<< End of script work >>>

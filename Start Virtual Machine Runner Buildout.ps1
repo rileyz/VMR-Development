@@ -57,9 +57,11 @@ $PostBootWaitInterval     = '30'
 $ForceRunUnprovenScripts  = $false
 
 #User modifiable Virtual Machine Runner variables.
+$VM_CleanUpDisks          = $true              #Note: Will preform VMware Workstation Clean up Disks.
 $VM_DisableScreenScaling  = $true              #Note: Disables VMware Display Scaling to virtual machine.
 $VM_EmptyDVDDrive         = $true              #Note: Ejects media from virtual machine DVD drive.
 $VM_OptimiseIOPerformance = $true
+
 
 $MimicHomeDrives    = 'H:Home'                 #None|H:Home
 $MimicCommonDrives  = 'I:IT Dept,S:Shared'     #None|F:Finance Dept|I:IT Dept,S:Shared

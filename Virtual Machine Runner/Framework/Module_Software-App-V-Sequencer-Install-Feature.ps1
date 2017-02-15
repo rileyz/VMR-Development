@@ -22,8 +22,8 @@ Author:.......http://www.linkedin.com/in/rileylim
 #<<< End of Script Support >>>
 
 # Script Assets ###################################################################################
-# Asset: 10.0.14393 32-bit\Appman Sequencer on x86-x86_en-us.msi
-# Asset: 10.0.14393 64-bit\Appman Sequencer on amd64-x64_en-us.msi
+# Asset: 32-bit\Appman Sequencer on x86-x86_en-us.msi
+# Asset: 64-bit\Appman Sequencer on amd64-x64_en-us.msi
 #<<< End of Script Assets >>>
 
 
@@ -43,20 +43,16 @@ VMR_ReadyMessagingEnvironment
 # Start of script work ############################################################################
 $ArrayScriptExitResult = @()
 
-$VersionAndBitness = $([Environment]::GetEnvironmentVariable("VMRWindowsVersion","Machine")) + ' ' + $([Environment]::GetEnvironmentVariable("VMRWindowsArchitecture","Machine"))
+$Bitness = $([Environment]::GetEnvironmentVariable("VMRWindowsArchitecture","Machine"))
 
-Switch ($VersionAndBitness) 
-    {'10.0.14393 32-bit'    {$Installer = "$VMRCollateral\$VersionAndBitness\Appman Sequencer on x86-x86_en-us.msi"
-                             $ScriptExitResult = (Start-Process -FilePath msiexec.exe -ArgumentList "/i `"$Installer`" AcceptEULA=1 CEIPOPTIN=0 MUOPTIN=0 REBOOT=ReallySuppress /qn" -Wait -Passthru).ExitCode}
-     '10.0.14393 64-bit'    {$Installer = "$VMRCollateral\$VersionAndBitness\Appman Sequencer on amd64-x64_en-us.msi"
-                             $ScriptExitResult = (Start-Process -FilePath msiexec.exe -ArgumentList "/i `"$Installer`" AcceptEULA=1 CEIPOPTIN=0 MUOPTIN=0 REBOOT=ReallySuppress /qn" -Wait -Passthru).ExitCode}
-     Default                {$ArrayScriptExitResult += 'Error'
-                             Write-Debug 'No match found!'}}
+Switch ($Bitness) 
+    {'32-bit'    {$Installer = "$VMRCollateral\$Bitness\Appman Sequencer on x86-x86_en-us.msi"
+                  $ArrayScriptExitResult += (Start-Process -FilePath msiexec.exe -ArgumentList "/i `"$Installer`" AcceptEULA=1 CEIPOPTIN=0 MUOPTIN=0 REBOOT=ReallySuppress /qn" -Wait -Passthru).ExitCode}
+     '64-bit'    {$Installer = "$VMRCollateral\$Bitness\Appman Sequencer on amd64-x64_en-us.msi"
+                  $ArrayScriptExitResult += (Start-Process -FilePath msiexec.exe -ArgumentList "/i `"$Installer`" AcceptEULA=1 CEIPOPTIN=0 MUOPTIN=0 REBOOT=ReallySuppress /qn" -Wait -Passthru).ExitCode}
+     Default     {$ArrayScriptExitResult += 'Error'
+                  Write-Debug 'No match found!'}}
 
-
-
-######Use $ArrayScriptExitResult to capture multiple results and check, otherwise delete.
-$ArrayScriptExitResult += $LASTEXITCODE
 $ArrayScriptExitResult += $?
 
 $SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
@@ -70,12 +66,11 @@ If ($ScriptError -eq $null)                       #If ScriptError is empty, then
             Else{$ScriptExitResult = '0'}}
     Else{$ScriptExitResult = 'Error'
          $ScriptError >> $VMRScriptLog}
-#End of Use $ArrayScriptExitResult to capture multiple results and check, otherwise delete.
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
      'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'

@@ -40,13 +40,15 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
+$ArrayScriptExitResult = @()
+
 (gwmi win32_operatingsystem -ComputerName localhost).Win32Shutdown(4)
 
 Do {$Explorer = Get-Process Explorer -ErrorAction SilentlyContinue
     Start-Sleep -Seconds 1}
     Until ($Explorer -eq $null)
 
-Start-Sleep 30
+Start-Sleep -Seconds 30
 
 $DataCVS = "$VMRCollateral\UserAccountExceptions.csv" 
 $UserAccountExceptionsArray = (Import-Csv $DataCVS -Header UserNames)[1..($DataCVS.length - 1)]
@@ -57,6 +59,7 @@ ForEach ($LocalAccount in $LocalUserAccountsArray)
     {$DoNotDelete = $null
      $LocalAccountName = $LocalAccount.Name 
      $LocalAccountName >> $VMRScriptLog
+
      ForEach ($AccountException in $UserAccountExceptionsArray)
          {If (($LocalAccountName -replace "`n|`r")  -eq ($AccountException -replace "@{UserNames=|}|`n|`r"))
                 {$DoNotDelete = $true}}
@@ -64,24 +67,31 @@ ForEach ($LocalAccount in $LocalUserAccountsArray)
      If ($DoNotDelete -eq $true)
              {' Not to be deleted.' >> $VMRScriptLog}
          Else{' To be deleted.' >> $VMRScriptLog
-              ' Removing profile.' >> $VMRScriptLog
               $User = Get-WmiObject Win32_UserProfile -filter "localpath='C:\\Users\\$LocalAccountName'"
               $User.Delete()
+              $ArrayScriptExitResult += $?
+      
+              &net User `"$LocalAccountName`" /Delete}
+              $ArrayScriptExitResult += $LASTEXITCODE}
 
-              ' Deleting user from system.'  >> $VMRScriptLog        
-              &net User `"$LocalAccountName`" /Delete}}
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
 
-$Results = 0 #need to check for sucess somehow
-
-If ($Results -eq 0)
-        {$ScriptExitResult = '0'}
-    Else{$ScriptExitResult = 'Error'}
+If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
+        {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
+                {$ScriptExitResult = 'Reboot'}
+            Else{$ScriptExitResult = '0'}}
+    Else{$ScriptExitResult = 'Error'
+         $ScriptError >> $VMRScriptLog}
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Local accounts removed ok.
-     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}         #Error.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
+     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
+     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
                  Write-Host "The script module was unable to trap exit code for $VMRScriptFile."}}
 #<<< End of script work >>>

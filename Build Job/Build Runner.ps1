@@ -595,8 +595,10 @@ Foreach ($VM in $VMs)
             #<<< End of App-V as a Feature Logic >>>
 
     VMWareSnapshotControl -RevertSnapshot -SnapshotName 'Pre-flight Safety Snapshot'
+
     Invoke-Item $VM
-    VMWareCleanUpDisksViaGUI -VM "$VM" -CheckForIdleInSeconds 20 -MaxWaitingMinutes 5
+
+    If ($VM_CleanUpDisks -eq $true) {VMWareCleanUpDisksViaGUI -VM "$VM" -CheckForIdleInSeconds 20 -MaxWaitingMinutes 5}
     
     $StopWatch.Stop()
     Write-Output "Completed build on `"$((Get-ChildItem -Path $VM).Name)`" at $(Get-Date)."

@@ -39,12 +39,28 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
+$ArrayScriptExitResult = @()
+
 $Process = Start-Process -FilePath $env:systemroot\system32\msiexec.exe -ArgumentList "/i `"$VMRCollateral\appv_client_ui_setup.msi`" AcceptEULA=1 /qn" -Wait -PassThru
 
-($ScriptExitResult = $Process.ExitCode) >> $VMRScriptLog
-    
+$ArrayScriptExitResult += $Process.ExitCode
+
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
+
+If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
+        {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
+                {$ScriptExitResult = 'Reboot'}
+            Else{$ScriptExitResult = '0'}}
+    Else{$ScriptExitResult = 'Error'
+         $ScriptError >> $VMRScriptLog}
+
+$ScriptExitResult >> $VMRScriptLog
+
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
      'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'

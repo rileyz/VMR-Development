@@ -39,6 +39,8 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
+$ArrayScriptExitResult = @()
+
 If (Test-Path 'C:\Program Files\Microsoft Application Virtualization\Sequencer\Sequencer.exe')
         {$Target = 'C:\Program Files\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
          $Shortcut = 'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Microsoft Application Virtualization Sequencer\Squencer with PVAD Enabled.lnk'
@@ -50,7 +52,7 @@ If (Test-Path 'C:\Program Files\Microsoft Application Virtualization\Sequencer\S
          $Shortcut.TargetPath = "$Target"
          $Shortcut.Save()
          
-         If (Test-Path $Shortcut){$ArrayScriptExitResult += 0}}
+         If (Test-Path $Shortcut) {$ArrayScriptExitResult += 0}}
 
 If (Test-Path 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe')
         {$Target = 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualization\Sequencer\Sequencer.exe'
@@ -63,7 +65,12 @@ If (Test-Path 'C:\Program Files\Windows Kits\10\Microsoft Application Virtualiza
          $Shortcut.TargetPath = "$Target"
          $Shortcut.Save()
          
-         If (Test-Path $Shortcut){$ArrayScriptExitResult += 0}}
+         If (Test-Path $Shortcut) {$ArrayScriptExitResult += 0}}
+
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
 
 If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
         {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
@@ -75,7 +82,7 @@ If ($ScriptError -eq $null)                       #If ScriptError is empty, then
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
      'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'

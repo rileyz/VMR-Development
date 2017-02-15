@@ -42,8 +42,8 @@ VMR_ReadyMessagingEnvironment
 # Start of script work ############################################################################
 $ArrayScriptExitResult = @()
 
-$ScriptExitResult += Write-Registry -RegistryKey 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -RegistryValueName 'fDenyTSConnections' -RegistryValueData '0' -RegistryValueType 'DWord'
-$ScriptExitResult += Write-Registry -RegistryKey 'HKLM:\System\CurrentControlSet\Control\Lsa' -RegistryValueName 'LimitBlankPasswordUse' -RegistryValueData '0' -RegistryValueType 'DWord'
+$ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -RegistryValueName 'fDenyTSConnections' -RegistryValueData '0' -RegistryValueType 'DWord'
+$ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\System\CurrentControlSet\Control\Lsa' -RegistryValueName 'LimitBlankPasswordUse' -RegistryValueData '0' -RegistryValueType 'DWord'
 &netsh AdvFirewall Firewall Set Rule Group="Remote Desktop" New Enable=Yes
 $ArrayScriptExitResult += $?
 
@@ -65,7 +65,7 @@ If ($ScriptError -eq $null)                       #If ScriptError is empty, then
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
      'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'

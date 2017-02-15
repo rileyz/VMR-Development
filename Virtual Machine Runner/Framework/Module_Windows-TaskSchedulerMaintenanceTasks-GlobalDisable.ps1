@@ -77,7 +77,7 @@ If ($ScriptError -eq $null)                       #If ScriptError is empty, then
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
      'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'

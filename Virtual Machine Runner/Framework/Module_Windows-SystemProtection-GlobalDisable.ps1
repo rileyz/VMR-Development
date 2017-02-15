@@ -45,38 +45,43 @@ $ArrayScriptExitResult = @()
 If ($LASTEXITCODE -eq '1' -or ($LASTEXITCODE -eq '0'))
         {$LASTEXITCODE = '0'}
 $ArrayScriptExitResult += $LASTEXITCODE
-Write-Host "Removing Shadow Copies exit code $LASTEXITCODE"
+Write-Debug "Removing Shadow Copies exit code $LASTEXITCODE"
 
 &vssadmin Resize ShadowStorage /For=C: /On=C: /MaxSize=1%
 $ArrayScriptExitResult += $LASTEXITCODE
-Write-Host "Resizing Shadow Volume size exit code $LASTEXITCODE"
+Write-Debug "Resizing Shadow Volume size exit code $LASTEXITCODE"
 
 Disable-ComputerRestore -Drive "C:\"
-Write-Host "Disabling System Restore exit code $LASTEXITCODE"
-$ArrayScriptExitResult += $LASTEXITCODE
+$ArrayScriptExitResult += $?
+Write-Debug "Disabling System Restore exit code: $?"
 
 $PreviousVersionsFilesKey = Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SPP\Clients\'
 $RegCheck = $PreviousVersionsFilesKey.GetValue("{3E7F07C9-6BC3-11DC-A033-0019B92BB8B1}")
 
 If ($RegCheck -eq $null)
-        {Write-Host 'Registry key for System Restore was not found, nothng to do here.'}
+        {Write-Debug 'Registry key for System Restore was not found, nothng to do here.'}
     Else{Remove-ItemProperty -path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\SPP\Clients' -name '{3E7F07C9-6BC3-11DC-A033-0019B92BB8B1}'
-         $ArrayScriptExitResult += $LASTEXITCODE
-         Write-Host 'Registry key for System Restore was removed.'}
+         $ArrayScriptExitResult += $?
+         Write-Debug 'Registry key for System Restore was removed.'}
 
-$ExitResultSuccessCodes = @('0') #List success codes here.
-$NonSuccessCodes = $ArrayScriptExitResult | Where-Object {$ExitResultSuccessCodes -notcontains $_}
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
 
-If ($NonSuccessCodes -eq $null)
-        {$ScriptExitResult = '0'}
+If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
+        {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
+                {$ScriptExitResult = 'Reboot'}
+            Else{$ScriptExitResult = '0'}}
     Else{$ScriptExitResult = 'Error'
-         $NonSuccessCodes >> "$VMRScriptLocation\..\Logs\$VMRScriptFile.log"}
+         $ScriptError >> $VMRScriptLog}
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}   #System Protection disabled ok.
-     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}      #Error in applying features.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
+     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
+     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
                  Write-Host "The script module was unable to trap exit code for $VMRScriptFile."}}
 #<<< End of script work >>>

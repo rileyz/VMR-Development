@@ -39,6 +39,8 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
+$ArrayScriptExitResult = @()
+
 $DataCVS = "$VMRCollateral\UserAccountsAdd.csv" 
 $UserAccountsArray = (Import-Csv $DataCVS -Header UserNames)[1..($DataCVS.length - 1)]
 
@@ -47,28 +49,34 @@ ForEach ($_ in $UserAccountsArray)
 
          "Adding user `'$CSVUser`'" >> $VMRScriptLog                       
          &net User "$CSVUser" /Add PASSWORDCHG:NO
-         $Results += $LASTEXITCODE
-         $LASTEXITCODE >> $VMRScriptLog #if last exit code = 2 then account exits         
+         $ArrayScriptExitResult += $LASTEXITCODE
          
-         'Setting the password to never expire.' >> $VMRScriptLog
+         #Password never expire.
          &WMIC USERACCOUNT WHERE "Name=`"$CSVUser`"" SET PasswordExpires=FALSE
-         $Results += $LASTEXITCODE
+         $ArrayScriptExitResult += $LASTEXITCODE
 
-         'Setting the password to blank/no password required.' >> $VMRScriptLog
+         #Setting the password to blank/no password required.
          Start-Process -FilePath cmd.exe -ArgumentList "/C net User $CSVUser `"`"" -Wait
-         $Results += $LASTEXITCODE
+         $ArrayScriptExitResult += $LASTEXITCODE}
 
-         $LASTEXITCODE >> $VMRScriptLog}
+$SuccessCodes = @('Example','0','3010','True','2')                                                #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
 
-If ($Results -ne 0)
-        {$ScriptExitResult = 'Error'}
-    Else{$ScriptExitResult = '0'}
+If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
+        {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
+                {$ScriptExitResult = 'Reboot'}
+            Else{$ScriptExitResult = '0'}}
+    Else{$ScriptExitResult = 'Error'
+         $ScriptError >> $VMRScriptLog}
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
-     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}         #Error in setting up user accounts.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
+     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
+     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
                  Write-Host "The script module was unable to trap exit code for $VMRScriptFile."}}
 #<<< End of script work >>>

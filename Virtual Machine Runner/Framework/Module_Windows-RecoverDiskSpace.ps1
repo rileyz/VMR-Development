@@ -43,7 +43,7 @@ $ArrayScriptExitResult = @()
 
 $OperatingSystem = [Environment]::GetEnvironmentVariable("VMRWindowsOperatingSystem","Machine")
 If ($OperatingSystem -notlike '*Server*')
-        {Write-Host 'Setting up Disk Cleanup'
+        {Write-Debug 'Setting up Disk Cleanup'
          $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Active Setup Temp Folders' -RegistryValueName 'StateFlags0000' -RegistryValueData '2' -RegistryValueType 'DWord'
          $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Downloaded Program Files' -RegistryValueName 'StateFlags0000' -RegistryValueData '2' -RegistryValueType 'DWord'
          $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\GameNewsFiles' -RegistryValueName 'StateFlags0000' -RegistryValueData '2' -RegistryValueType 'DWord'
@@ -69,11 +69,11 @@ If ($OperatingSystem -notlike '*Server*')
          $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Error Reporting System Queue Files' -RegistryValueName 'StateFlags0000' -RegistryValueData '2' -RegistryValueType 'DWord'
          $ArrayScriptExitResult += Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Upgrade Log Files' -RegistryValueName 'StateFlags0000' -RegistryValueData '2' -RegistryValueType 'DWord'
 
-         Write-Host 'Starting Disk Cleanup.'
+         Write-Debug 'Starting Disk Cleanup.'
          Start-Process -FilePath cleanmgr.exe -ArgumentList '/sagerun:0' -Wait
          $ArrayScriptExitResult += $?}
 
-Write-Host 'Clearing user and system temp folders'
+Write-Debug 'Clearing user and system temp folders'
 Remove-Item C:\Users\$env:username\AppData\Local\Temp\* -Recurse
 Remove-Item C:\Logs -Recurse -Force
 Remove-Item C:\PerfLogs -Recurse -Force
@@ -98,7 +98,8 @@ If ($ScriptError -eq $null)                       #If ScriptError is empty, then
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
+     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
                  Write-Host "The script module was unable to trap exit code for $VMRScriptFile."}}

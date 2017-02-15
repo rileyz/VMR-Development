@@ -39,10 +39,7 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
-$ArrayScriptExitResult = @()
-
 Enable-Appv
-
 $ArrayScriptExitResult += $?
 
 $SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
@@ -56,12 +53,11 @@ If ($ScriptError -eq $null)                       #If ScriptError is empty, then
             Else{$ScriptExitResult = '0'}}
     Else{$ScriptExitResult = 'Error'
          $ScriptError >> $VMRScriptLog}
-#End of Use $ArrayScriptExitResult to capture multiple results and check, otherwise delete.
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
      'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'

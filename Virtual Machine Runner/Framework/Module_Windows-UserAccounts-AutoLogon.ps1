@@ -42,6 +42,7 @@ VMR_ReadyMessagingEnvironment
 
 # Start of script work ############################################################################
 $ArrayScriptExitResult = @()
+
 $AutoAdminLogon = '1'
 $DefaultUserName = $AutoLogonUserName
 $DefaultPassword = $AutoLogonPassword
@@ -54,26 +55,32 @@ If ((Test-RegistryValue -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersio
         {$RegCheckPassword = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -Name DefaultPassword}
 
 If ($RegCheckAutoLogon.AutoAdminLogon -eq $AutoAdminLogon -And $RegCheckUserName.DefaultUserName -eq $DefaultUserName -And $RegCheckPassword.DefaultPassword -eq $DefaultPassword)
-        {Write-Host "Auto Logon has already been set for `'$DefaultUserName`', with a password of `'$DefaultPassword`'."
+        {Write-Debug "Auto Logon has already been set for `'$DefaultUserName`', with a password of `'$DefaultPassword`'."
          $ArrayScriptExitResult += '0'}
     Else{$ArrayScriptExitResult += (Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -RegistryValueName 'AutoAdminLogon' -RegistryValueData "$AutoAdminLogon" -RegistryValueType 'String')
          $ArrayScriptExitResult += (Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -RegistryValueName 'DefaultUserName' -RegistryValueData "$DefaultUserName" -RegistryValueType 'String')
          $ArrayScriptExitResult += (Write-Registry -RegistryKey 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon' -RegistryValueName 'DefaultPassword' -RegistryValueData "$DefaultPassword" -RegistryValueType 'String')}     
 
-$NonSuccessCodes = $ArrayScriptExitResult | Where-Object {0 -notcontains $_}
+$ArrayScriptExitResult += 'Reboot'
 
-If ($NonSuccessCodes -eq $null)
-        {Write-Host "Auto Logon has been set for `'$DefaultUserName`', with a password of `'$DefaultPassword`'."
-         $ScriptExitResult = 'Reboot'}
+$SuccessCodes = @('Example','0','Reboot','True')                                                  #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','Reboot')                                               #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
+
+If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
+        {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
+                {$ScriptExitResult = 'Reboot'}
+            Else{$ScriptExitResult = '0'}}
     Else{$ScriptExitResult = 'Error'
-         $NonSuccessCodes >> $VMRScriptLog}
+         $ScriptError >> $VMRScriptLog}
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
-     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'} 
-     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}         #Error in setting up user accounts.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
+     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
+     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
                  Write-Host "The script module was unable to trap exit code for $VMRScriptFile."}}
 #<<< End of script work >>>

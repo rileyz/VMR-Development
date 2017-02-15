@@ -43,23 +43,24 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
-$DataCSV = "$VMRCollateral\$WindowsFeaturesCSV" 
 $ArrayScriptExitResult = @()
 
+$DataCSV = "$VMRCollateral\$WindowsFeaturesCSV" 
+
 If ((Test-Path "$DataCSV") -eq $true)
-        {Write-Host 'The CSV path is valid, starting adjustment of Windows Features.'
+        {Write-Debug 'The CSV path is valid, starting adjustment of Windows Features.'
          $ConfigureFeatures = (Import-Csv $DataCSV -Header WindowsFeature,State)[1..($DataCSV.length - 1)]
          $OperatingSystem = [Environment]::GetEnvironmentVariable("VMRWindowsOperatingSystem","Machine")
          $OperatingSystemArchitecture= [Environment]::GetEnvironmentVariable("VMRWindowsArchitecture","Machine")
 
-         Write-Host 'Processing start time is' (Get-Date)
+         Write-Debug 'Processing start time is' (Get-Date)
 
          Switch -Wildcard ($OperatingSystem)
              {'*Windows 10*'       {If ($OperatingSystemArchitecture -eq '32-Bit')
                                            {$DismSource = "$VMRCollateral\SxS Windows OS Version 10.0 32-Bit"
                                             ForEach ($_ in $ConfigureFeatures) 
                                                 {Start-Sleep -Seconds 1
-                                                 Write-Host 'Checking Feature' $_.WindowsFeature 'is' $_.State
+                                                 Write-Debug 'Checking Feature' $_.WindowsFeature 'is' $_.State
                                                  $WinFeat = $_.WindowsFeature
                                                  $DismCheck = &Dism /online /Get-FeatureInfo /FeatureName:$WinFeat
                                                  $IsThisFeatEnabled = $DismCheck -contains "State : Enabled"
@@ -68,25 +69,25 @@ If ((Test-Path "$DataCSV") -eq $true)
                                                         {$IsThisFeatEnabled = 'Enabled'}
                                                     Else{$IsThisFeatEnabled = 'Disabled'}
 
-                                                 Write-Host ' Currently this feature is' $IsThisFeatEnabled
+                                                 Write-Debug ' Currently this feature is' $IsThisFeatEnabled
 
                                                  $Check = ($IsThisFeatEnabled -eq $_.State)
-                                                 Write-Host ' Does this match our desired state?' $Check
+                                                 Write-Debug ' Does this match our desired state?' $Check
 
                                                  If ($Check -eq $false) 
                                                         {If ($IsThisFeatEnabled -eq 'Enabled') 
-                                                                {Write-Host ' Disabling Feature.'
+                                                                {Write-Debug ' Disabling Feature.'
                                                                  &Dism /online /Disable-Feature /FeatureName:$WinFeat /norestart
-                                                                 Write-Host " Exit code is $LASTEXITCODE"
+                                                                 Write-Debug " Exit code is $LASTEXITCODE"
                                                                  $WinFeat >> $VMRScriptLog
                                                                  $LASTEXITCODE >> $VMRScriptLog
                                                                  If ($LASTEXITCODE -ne 0)
                                                                          {$ArrayScriptExitResult += $LASTEXITCODE}}
 
                                                          If ($IsThisFeatEnabled -eq 'Disabled') 
-                                                                {Write-Host ' Enabling Feature.'
+                                                                {Write-Debug ' Enabling Feature.'
                                                                  &Dism /online /Enable-Feature /FeatureName:$WinFeat /norestart /Source:"$DismSource" /LimitAccess
-                                                                 Write-Host " Exit code is $LASTEXITCODE"
+                                                                 Write-Debug " Exit code is $LASTEXITCODE"
                                                                  $WinFeat >> $VMRScriptLog
                                                                  $LASTEXITCODE >> $VMRScriptLog
                                                                  If ($LASTEXITCODE -ne 0)
@@ -94,7 +95,7 @@ If ((Test-Path "$DataCSV") -eq $true)
                                        Else{$DismSource = "$VMRCollateral\SxS Windows OS Version 10.0 64-Bit"
                                             ForEach ($_ in $ConfigureFeatures) 
                                                 {Start-Sleep -Seconds 1
-                                                 Write-Host 'Checking Feature' $_.WindowsFeature 'is' $_.State
+                                                 Write-Debug 'Checking Feature' $_.WindowsFeature 'is' $_.State
                                                  $WinFeat = $_.WindowsFeature
                                                  $DismCheck = &Dism /online /Get-FeatureInfo /FeatureName:$WinFeat
                                                  $IsThisFeatEnabled = $DismCheck -contains "State : Enabled"
@@ -103,25 +104,25 @@ If ((Test-Path "$DataCSV") -eq $true)
                                                         {$IsThisFeatEnabled = 'Enabled'}
                                                     Else{$IsThisFeatEnabled = 'Disabled'}
 
-                                                 Write-Host ' Currently this feature is' $IsThisFeatEnabled
+                                                 Write-Debug ' Currently this feature is' $IsThisFeatEnabled
 
                                                  $Check = ($IsThisFeatEnabled -eq $_.State)
-                                                 Write-Host ' Does this match our desired state?' $Check
+                                                 Write-Debug ' Does this match our desired state?' $Check
 
                                                  If ($Check -eq $false) 
                                                         {If ($IsThisFeatEnabled -eq 'Enabled') 
-                                                                {Write-Host ' Disabling Feature.'
+                                                                {Write-Debug ' Disabling Feature.'
                                                                  &Dism /online /Disable-Feature /FeatureName:$WinFeat /norestart
-                                                                 Write-Host " Exit code is $LASTEXITCODE"
+                                                                 Write-Debug " Exit code is $LASTEXITCODE"
                                                                  $WinFeat >> $VMRScriptLog
                                                                  $LASTEXITCODE >> $VMRScriptLog
                                                                  If ($LASTEXITCODE -ne 0)
                                                                          {$ArrayScriptExitResult += $LASTEXITCODE}}
 
                                                          If ($IsThisFeatEnabled -eq 'Disabled') 
-                                                                {Write-Host ' Enabling Feature.'
+                                                                {Write-Debug ' Enabling Feature.'
                                                                  &Dism /online /Enable-Feature /FeatureName:$WinFeat /norestart /Source:"$DismSource" /LimitAccess
-                                                                 Write-Host " Exit code is $LASTEXITCODE"
+                                                                 Write-Debug " Exit code is $LASTEXITCODE"
                                                                  $WinFeat >> $VMRScriptLog
                                                                  $LASTEXITCODE >> $VMRScriptLog
                                                                  If ($LASTEXITCODE -ne 0)
@@ -130,7 +131,7 @@ If ((Test-Path "$DataCSV") -eq $true)
               '*Windows 8*'        {Write-Output ''}
               '*Windows 7*'        {ForEach ($_ in $ConfigureFeatures) 
                                         {Start-Sleep -Seconds 1
-                                         Write-Host 'Checking Feature' $_.WindowsFeature 'is' $_.State
+                                         Write-Debug 'Checking Feature' $_.WindowsFeature 'is' $_.State
                                          $WinFeat = $_.WindowsFeature
                                          $DismCheck = &Dism /online /Get-FeatureInfo /FeatureName:$WinFeat
                                          $IsThisFeatEnabled = $DismCheck -contains "State : Enabled"
@@ -139,25 +140,25 @@ If ((Test-Path "$DataCSV") -eq $true)
                                                 {$IsThisFeatEnabled = 'Enabled'}
                                             Else{$IsThisFeatEnabled = 'Disabled'}
 
-                                         Write-Host ' Currently this feature is' $IsThisFeatEnabled
+                                         Write-Debug ' Currently this feature is' $IsThisFeatEnabled
 
                                          $Check = ($IsThisFeatEnabled -eq $_.State)
-                                         Write-Host ' Does this match our desired state?' $Check
+                                         Write-Debug ' Does this match our desired state?' $Check
 
                                          If ($Check -eq $false) 
                                                 {If ($IsThisFeatEnabled -eq 'Enabled') 
-                                                        {Write-Host ' Disabling Feature.'
+                                                        {Write-Debug ' Disabling Feature.'
                                                          &Dism /online /Disable-Feature /FeatureName:$WinFeat /norestart
-                                                         Write-Host " Exit code is $LASTEXITCODE"
+                                                         Write-Debug " Exit code is $LASTEXITCODE"
                                                          $WinFeat >> $VMRScriptLog
                                                          $LASTEXITCODE >> $VMRScriptLog
                                                          If ($LASTEXITCODE -ne 0)
                                                                  {$ArrayScriptExitResult += $LASTEXITCODE}}
 
                                                  If ($IsThisFeatEnabled -eq 'Disabled') 
-                                                        {Write-Host ' Enabling Feature.'
+                                                        {Write-Debug ' Enabling Feature.'
                                                          &Dism /online /Enable-Feature /FeatureName:$WinFeat /norestart
-                                                         Write-Host " Exit code is $LASTEXITCODE"
+                                                         Write-Debug " Exit code is $LASTEXITCODE"
                                                          $WinFeat >> $VMRScriptLog
                                                          $LASTEXITCODE >> $VMRScriptLog
                                                          If ($LASTEXITCODE -ne 0)
@@ -168,28 +169,29 @@ If ((Test-Path "$DataCSV") -eq $true)
               '*Server 2008 R2*'   {Write-Output ''}
               Default              {Write-Warning 'Unknown Operating System'}}
 
-         Write-Host 'End time is' (Get-Date)}
-    Else{Write-Host 'The CSV path is not valid.'
-         $ScriptExitResult = 'Error'
+         Write-Debug 'End time is' (Get-Date)}
+    Else{Write-Debug 'The CSV path is not valid.'
+         $ArrayScriptExitResult += 'Error'
          Exit}
 
-$ExitResultSuccessCodes = @('3010') #List non zero success codes here.
-$NonSuccessCodes = $ArrayScriptExitResult | Where-Object {$ExitResultSuccessCodes -notcontains $_}
-$SuccessButNeedsReboot = $ArrayScriptExitResult | Where-Object {$ExitResultSuccessCodes -contains $_}
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
 
-If ($NonSuccessCodes -eq $null)
-        {If ($SuccessButNeedsReboot -ne $null)
+If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
+        {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
                 {$ScriptExitResult = 'Reboot'}
             Else{$ScriptExitResult = '0'}}
     Else{$ScriptExitResult = 'Error'
-         $NonSuccessCodes >> $VMRScriptLog}
+         $ScriptError >> $VMRScriptLog}
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Features applied ok.
-     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'} #Features applied, pending reboot.
-     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}         #Error in applying features.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
+     'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
+     'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
                  Write-Host "The script module was unable to trap exit code for $VMRScriptFile."}}
 #<<< End of script work >>>

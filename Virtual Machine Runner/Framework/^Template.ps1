@@ -42,9 +42,8 @@ VMR_ReadyMessagingEnvironment
 $ArrayScriptExitResult = @()
 
 Write-Output 'Script code here.'
-Write-Output 'Script code here.'
 
-#Use $ArrayScriptExitResult to capture multiple results and check, otherwise delete.
+$ArrayScriptExitResult += Write-Output 'Script code here and assign result.'
 $ArrayScriptExitResult += $LASTEXITCODE
 $ArrayScriptExitResult += $?
 
@@ -59,12 +58,11 @@ If ($ScriptError -eq $null)                       #If ScriptError is empty, then
             Else{$ScriptExitResult = '0'}}
     Else{$ScriptExitResult = 'Error'
          $ScriptError >> $VMRScriptLog}
-#End of Use $ArrayScriptExitResult to capture multiple results and check, otherwise delete.
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
      'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
