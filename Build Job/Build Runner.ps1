@@ -1,5 +1,5 @@
 ﻿# Setting up housekeeping for virtual machine #####################################################
-Write-Output 'Starting housekeeping actions, preparing virtual machine.'
+Write-Output 'Starting housekeeping actions, preparing enviroment.'
 
 If ($myInvocation.ScriptName -eq '')
         {Write-Warning 'Unable to discover parent script, this is running in an unsupported manner.'
@@ -39,6 +39,8 @@ Foreach ($VM in $VMs)
     Write-Output "Starting build on `"$((Get-ChildItem -Path $VM).Name)`" at $(($BuildDate = Get-Date))."
     $StopWatch = [Diagnostics.Stopwatch]::StartNew()
     
+    Invoke-Item $VM
+
     #Creating safety snapshot for manual rollback if build fails.
     Write-Output 'Creating Pre-flight Safety Snapshot.'
     $VM_Snapshots = .\vmrun.exe -T ws listSnapshots $VM

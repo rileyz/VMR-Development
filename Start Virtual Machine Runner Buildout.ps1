@@ -14,7 +14,7 @@ Quick Guide
     variables for desired build outcome, hit play when you're ready to build. 
 
 Release Version
-    0.01 - Initial Synchronisation - 26/10/2016
+    0.02 - Andorra - 01/03/2017
  
 Copyright & Intellectual Property
     Feel to copy, modify and redistribute, but please pay credit where it is due.
