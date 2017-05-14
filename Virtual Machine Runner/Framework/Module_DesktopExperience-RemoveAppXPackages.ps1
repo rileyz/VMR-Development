@@ -21,7 +21,7 @@ Author:.......http://www.linkedin.com/in/rileylim
 #<<< End of Script Support >>>
 
 # Script Assets ###################################################################################
-# Asset: DefaultMordernApps.csv
+# Asset: WindowsApp.csv
 #<<< End of Script Assets >>>
 
 
@@ -39,25 +39,38 @@ VMR_ReadyMessagingEnvironment
 
 
 # Start of script work ############################################################################
-$DataCVS = "$VMRCollateral\DefaultMordernApps.csv"
+$ArrayScriptExitResult = @()
 
-$MordernAppsArray = (Import-Csv $DataCVS -Header MordernApp,AppXName)[1..($DataCVS.length - 1)]
+$DataCVS = "$VMRCollateral\WindowsApp.csv"
 
-ForEach ($_ in $MordernAppsArray)
-        {Write-Host "Processing" $_.MordernApp
-         $App = Get-AppxPackage -Name $_.AppXName
+$WindowsAppArray = (Import-Csv $DataCVS -Header WindowsApp)[1..($DataCVS.length - 1)]
 
-         If ($App -ne $null)
-                 {Remove-AppxPackage -Package (Get-AppxPackage -Name $_.AppXName).PackageFullName
-                  Write-Host ' AppX package removed!'}
-             Else{Write-Host ' Appx package was not found on this machine.'}}
+ForEach ($_ in $WindowsAppArray)
+        {Write-Debug "Processing $($_.WindowsApp)"
+         $AppX = Get-AppxPackage -Name $_.WindowsApp
 
-$ScriptExitResult = 0 #how do we error check this?
+         If ($AppX -ne $null)
+                 {Remove-AppxPackage -Package $AppX.PackageFullName
+                  $ArrayScriptExitResult += $?
+                  Write-Debug 'AppX package removed!'}
+             Else{Write-Debug 'Appx package was not found on this machine.'}}
+
+$SuccessCodes = @('Example','0','3010','True')                                                    #List all success codes, including reboots here.
+$SuccessButNeedsRebootCodes = @('Example','3010')                                                 #List success but needs reboot code here.
+$ScriptError = $ArrayScriptExitResult | Where-Object {$SuccessCodes -notcontains $_}              #Store errors found in this variable
+$ScriptReboot = $ArrayScriptExitResult | Where-Object {$SuccessButNeedsRebootCodes -contains $_}  #Store success but needs reboot in this variable
+
+If ($ScriptError -eq $null)                       #If ScriptError is empty, then everything processed ok.
+        {If ($ScriptReboot -ne $null)             #If ScriptReboot is not empty, then everything processed ok, but just needs a reboot.
+                {$ScriptExitResult = 'Reboot'}
+            Else{$ScriptExitResult = '0'}}
+    Else{$ScriptExitResult = 'Error'
+         $ScriptError >> $VMRScriptLog}
 
 $ScriptExitResult >> $VMRScriptLog
 
 Switch ($ScriptExitResult) 
-    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}      #Completed ok.
+    {'0'        {VMR_ProcessingModuleComplete -ModuleExitStatus 'Complete'}
      'Reboot'   {VMR_ProcessingModuleComplete -ModuleExitStatus 'RebootPending'}
      'Error'    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Error'}
      Default    {VMR_ProcessingModuleComplete -ModuleExitStatus 'Null'
@@ -67,7 +80,7 @@ Switch ($ScriptExitResult)
 
 
 <#
-Virtual Machine Runner  -  Copyright (C) 2016-2017  -  Riley Lim
+Virtual Machine Runner  Copyright (C) 2016-2017   Riley Lim
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU
 General Public License as published by the Free Software Foundation, either version 3 of the 
