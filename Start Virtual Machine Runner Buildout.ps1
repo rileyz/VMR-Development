@@ -103,6 +103,10 @@ $AppVClient51HF5    = $true
 $AppVClient51HF6    = $true
 $AppVClient51HF7    = $true
 
+$AppVSeq51HF8       = $true
+$AppVClient51HF8    = $true
+$AppVClient51HF9    = $true
+
 $AppVInBoxClient    = $true                    #Note: App-V Client is now part of the operating system.
 $AppVADKSequencer   = $true                    #Note: Sequencer via the Windows Assessment and Deployment Kit.
 

@@ -123,7 +123,7 @@ Write-Output "4. $StatusMessage4"
 Write-Output "5. $StatusMessage5"
 Write-Output ''
 
-If (($SnapshotReport | Where {$_.'Status/Action' -like '*Revert*'}).Count -gt 0 -and ($SnapshotReport | Where {$_.'Status/Action' -like '*Warning*'}).Count -gt 0)
+If (($SnapshotReport | Where {$_.'Status/Action' -like '*Revert*'}).Count -gt 0 -or ($SnapshotReport | Where {$_.'Status/Action' -like '*Warning*'}).Count -gt 0)
         {If (($SnapshotReport | Where {$_.'Status/Action' -like '*Revert*'}).Count -gt 0) {Write-Warning 'Preceding will revert and remove child snapshots.'}
          If (($SnapshotReport | Where {$_.'Status/Action' -like '*Warning*'}).Count -gt 0) {Write-Warning 'Please ensure you are building on a clean virtual machine.'}
 
@@ -231,7 +231,7 @@ Foreach ($VM in $VMs)
                     {$Base = $true}
                 Else{$Base = $null}
 
-            If ($AppVSeq5SP3 -or $AppVClient5SP3 -or $AppVClient5SP3HF1 -or $AppVClient5SP3HF2 -or $AppVClient5SP3HF3 -or $AppVSeq51 -or $AppVClient51 -or $AppVClient51HF1 -or $AppVClient51HF2 -or $AppVClient51HF3 -eq $true -or $AppVClient51HF4 -eq $true -or $AppVClient51HF5 -eq $true -or $AppVClient51HF6 -eq $true  -or $AppVClient51HF7 -eq $true)
+            If ($AppVSeq5SP3 -or $AppVClient5SP3 -or $AppVClient5SP3HF1 -or $AppVClient5SP3HF2 -or $AppVClient5SP3HF3 -or $AppVSeq51 -or $AppVClient51 -or $AppVClient51HF1 -or $AppVClient51HF2 -or $AppVClient51HF3 -or $AppVClient51HF4 -or $AppVClient51HF5 -or $AppVClient51HF6 -or $AppVClient51HF7 -or $AppVSeq51HF8 -or $AppVClient51HF8 -or $AppVClient51HF9 -eq $true)
                     {$Base5SP3 = $true}
                 Else{$Base5SP3 = $null}
 
@@ -643,7 +643,48 @@ Foreach ($VM in $VMs)
                      . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
                      VMR_RemoveJunctionPoint
                      VMWarePowerControl -SoftStop
-                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF7'}}
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF7'}
+
+            If ($AppVSeq51HF8 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start -Headless $VM_HeadlessMode
+                     VMR_CreateJunctionPoint
+
+                     Switch -Wildcard ($VM_OperatingSystem)
+                         {'*Windows 10*'       {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows 10.ps1" ; Break}
+                          '*Windows 8.1*'      {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows 8.ps1" ; Break}
+                          '*Windows 8*'        {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows 8.ps1" ; Break}
+                          '*Windows 7*'        {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows 7.ps1" ; Break}
+                          '*Server 2012 R2*'   {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows Server 2012.ps1" ; Break}
+                          '*Server 2012*'      {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows Server 2012.ps1" ; Break}
+                          '*Server 2008 R2*'   {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows Server 2008 R2.ps1" ; Break}
+                          Default              {Write-Warning 'Unknown Operating System'}}
+
+                     . "$VMRScriptLocation\Build Job\App-V Sequencer 5.1HF8.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Sequencer 5.1HF8'}
+         
+            If ($AppVClient51HF8 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start -Headless $VM_HeadlessMode
+                     VMR_CreateJunctionPoint
+                     . "$VMRScriptLocation\Build Job\App-V Client 5.1HF8.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF8'}           
+                     
+            If ($AppVClient51HF9 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start -Headless $VM_HeadlessMode
+                     VMR_CreateJunctionPoint
+                     . "$VMRScriptLocation\Build Job\App-V Client 5.1HF9.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF9'}}
             #<<< End of App-V as an installation  Logic >>>
 
        Else{# Start of App-V as a Feature Logic ###############################################################
@@ -720,7 +761,7 @@ Foreach ($VM in $VMs)
     If ($VM_CleanUpDisks -eq $true)
             {Write-Output 'Recovering disks space via VMware Workstation Clean Up Disks.'
              If ($Global:LockStatus -eq 'SessionUnlock')
-                     {Write-Output 'Workstation is unlocked, will attempt space recovery.'
+                     {Write-Output ' Workstation is unlocked, will attempt space recovery.'
                       VMWareCleanUpDisksViaGUI -VM "$VM" -CheckForIdleInSeconds 20 -MaxWaitingMinutes 5}
                  Else{Write-Warning 'Workstation is locked, will not attempt space recovery. Please perform this action manually.'}}
              
