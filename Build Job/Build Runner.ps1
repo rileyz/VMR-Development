@@ -231,7 +231,7 @@ Foreach ($VM in $VMs)
                     {$Base = $true}
                 Else{$Base = $null}
 
-            If ($AppVSeq5SP3 -or $AppVClient5SP3 -or $AppVClient5SP3HF1 -or $AppVClient5SP3HF2 -or $AppVClient5SP3HF3 -or $AppVSeq51 -or $AppVClient51 -or $AppVClient51HF1 -or $AppVClient51HF2 -or $AppVClient51HF3 -or $AppVClient51HF4 -or $AppVClient51HF5 -or $AppVClient51HF6 -or $AppVClient51HF7 -or $AppVSeq51HF8 -or $AppVClient51HF8 -or $AppVClient51HF9 -eq $true)
+            If ($AppVSeq5SP3 -or $AppVClient5SP3 -or $AppVClient5SP3HF1 -or $AppVClient5SP3HF2 -or $AppVClient5SP3HF3 -or $AppVSeq51 -or $AppVClient51 -or $AppVClient51HF1 -or $AppVClient51HF2 -or $AppVClient51HF3 -or $AppVClient51HF4 -or $AppVClient51HF5 -or $AppVClient51HF6 -or $AppVClient51HF7 -or $AppVSeq51HF8 -or $AppVClient51HF8 -or $AppVClient51HF9 -or $AppVSeq51HF10 -or $AppVClient51HF10 -eq $true)
                     {$Base5SP3 = $true}
                 Else{$Base5SP3 = $null}
 
@@ -684,7 +684,38 @@ Foreach ($VM in $VMs)
                      . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
                      VMR_RemoveJunctionPoint
                      VMWarePowerControl -SoftStop
-                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF9'}}
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF9'}
+
+            If ($AppVSeq51HF10 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start -Headless $VM_HeadlessMode
+                     VMR_CreateJunctionPoint
+
+                     Switch -Wildcard ($VM_OperatingSystem)
+                         {'*Windows 10*'       {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows 10.ps1" ; Break}
+                          '*Windows 8.1*'      {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows 8.ps1" ; Break}
+                          '*Windows 8*'        {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows 8.ps1" ; Break}
+                          '*Windows 7*'        {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows 7.ps1" ; Break}
+                          '*Server 2012 R2*'   {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows Server 2012.ps1" ; Break}
+                          '*Server 2012*'      {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows Server 2012.ps1" ; Break}
+                          '*Server 2008 R2*'   {. "$VMRScriptLocation\Build Job\Configuration for Sequencer Windows Server 2008 R2.ps1" ; Break}
+                          Default              {Write-Warning 'Unknown Operating System'}}
+
+                     . "$VMRScriptLocation\Build Job\App-V Sequencer 5.1HF10.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Sequencer 5.1HF10'}
+                     
+            If ($AppVClient51HF10 -eq $true)
+                    {VMWareSnapshotControl -RevertSnapshot -SnapshotName 'App-V 5SP3 Base'
+                     VMWarePowerControl -Start -Headless $VM_HeadlessMode
+                     VMR_CreateJunctionPoint
+                     . "$VMRScriptLocation\Build Job\App-V Client 5.1HF10.ps1"
+                     . "$VMRScriptLocation\Build Job\Common Task to Optimise and Clean Up.ps1"
+                     VMR_RemoveJunctionPoint
+                     VMWarePowerControl -SoftStop
+                     VMWareSnapshotControl -TakeSnapshot -SnapshotName 'Client 5.1HF10'}}
             #<<< End of App-V as an installation  Logic >>>
 
        Else{# Start of App-V as a Feature Logic ###############################################################
